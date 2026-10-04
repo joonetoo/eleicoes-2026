@@ -14,7 +14,7 @@ Projeto próprio desde 2026-10-04, separado do Ritmo (antes morava em `mei-finan
 - Base: `https://resultados.tse.jus.br/oficial/ele2026/`. O TSE libera CORS pro `joonetoo.github.io`.
 - 1º turno (04/10): eleição **6257** Presidente (`br-c0001`), **6259** Governador (`<uf>-c0003`) e Senado (`<uf>-c0005`) de PR, SP, RS, PE e MG.
 - Busca a cada 10 s. Presidente fica fixo em cima; Governador e Senado (3 mais votados) trocam de estado a cada 1 min, deslizando.
-- A cada 5 min entra por 30 s a tela dos deputados federais do PR (`pr-c0006`, 30 cadeiras): os 30 mais votados; quando o TSE marca eleitos (`e:'s'` / `st` "Eleito…"), eles vão pra frente em verde. Botões no topo trocam na mão; botão Pausar deixa a tela parada (chave `apuracao-pausa`).
+- A cada 5 min entra por 30 s a tela dos deputados, com filtros: estado (27 UFs), federal `c0006` / estadual `c0007` (DF: distrital `c0008`), eleitos / mais votados. Vagas vêm do arquivo (`carg[0].nv`); mais de 30 vagas passa páginas a cada 10 s. Escolha guardada em `apuracao-dep`. Botões no topo trocam na mão; botão Pausar deixa a tela parada (`apuracao-pausa`).
 - 2º turno (25/10): eleição **6258** Presidente, **6260** Governador PR (só se o PR tiver 2º turno).
 - Lê os dois formatos: `dados/<uf>/<uf>-cXXXX-eXXXXXX-u.json` (completo) e `dados-simplificados/…-r.json`; fica com o mais adiantado.
 - Troca sozinho pro 2º turno quando o arquivo de Presidente da 6258 aparece. Senado (e Governador, se não houver 2º turno no PR) mostram o resultado final do 1º.
