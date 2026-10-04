@@ -1,0 +1,16 @@
+{
+  "name": "Apuração 2026",
+  "short_name": "Apuração",
+  "description": "Apuração ao vivo: Presidente, Governador e Senado do Paraná, com dados oficiais do TSE.",
+  "start_url": "./",
+  "scope": "./",
+  "id": "./",
+  "display": "standalone",
+  "background_color": "#1B3A6B",
+  "theme_color": "#1B3A6B",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icon-mac-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
