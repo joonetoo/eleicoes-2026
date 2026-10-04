@@ -205,6 +205,8 @@ main{max-width:1480px;margin:0 auto;padding:10px 16px 8px;display:flex;flex-dire
 }
 .bt em{display:none;font-style:normal}
 @media (max-width:760px){.acoes .bt span{display:none}.acoes .bt em{display:inline}}
+/* Mac com tela até ~1700px: nomes curtos nos botões pra barra de cima caber numa linha só */
+@media (min-width:761px) and (max-width:1700px){.acoes .bt span{display:none}.acoes .bt em{display:inline}.acoes .bt{padding:8px 13px}}
 @media (prefers-reduced-motion:reduce){.vivo i{animation:none}}
 </style>
 <style>
@@ -224,6 +226,7 @@ main{max-width:1480px;margin:0 auto;padding:10px 16px 8px;display:flex;flex-dire
 @keyframes anda{from{width:0}to{width:100%}}
 @media (max-width:760px){.ufs{margin-top:12px}.uf{flex:1;padding:8px 0}}
 .uf.ufdep{padding-inline:14px}
+body.pausado .uf.on:after{display:none}
 /* tela dos deputados */
 body.modoDep main>.pres,body.modoDep main>.faixa,body.modoDep main>.urnas{display:none}
 .deps{padding:16px 18px 18px;display:flex;flex-direction:column;gap:12px}
@@ -278,6 +281,7 @@ body.modoDep main>.pres,body.modoDep main>.faixa,body.modoDep main>.urnas{displa
   <div class="ufs" id="ufs"></div>
   <span class="demo" id="estado">Aguardando os primeiros números do TSE (previsto para as 17h).</span>
   <div class="acoes">
+    <button class="bt" id="pausa" type="button" title="Deixa a tela parada onde está (os números continuam atualizando)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 5v14M16 5v14"/></svg><span>Pausar telas</span><em>Pausar</em></button>
     <button class="bt" id="som" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg><span>Ligar som</span><em>Som</em></button>
     <button class="bt" id="tema" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z"/></svg><span>Automático</span><em>Tema</em></button>
     <button class="bt" id="replay" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg><span>Testar a virada</span><em>Testar</em></button>
@@ -539,21 +543,31 @@ function trocarTela(paraDep){
 }
 function mostrarDeps(){
   buscarDeps().catch(()=>{});
-  trocarTela(true);marcarChips();
-  clearTimeout(volta);volta=setTimeout(()=>{trocarTela(false);clearInterval(relogio);relogio=setInterval(()=>irPara(ufAt+1),TROCA);},DEP_DURA);
-  clearInterval(depRelogio);depRelogio=setInterval(mostrarDeps,DEP_CADA);
+  trocarTela(true);marcarChips();ligarRelogios();
 }
 
-let relogio=null;
+/* ---------- relógios das telas (param quando o botão Pausar está ligado; os números continuam chegando) ---------- */
+let relogio=null,pausado=ler('apuracao-pausa')==='1';
+function ligarRelogios(){
+  clearInterval(relogio);clearInterval(depRelogio);clearTimeout(volta);
+  document.body.classList.toggle('pausado',pausado);
+  if(pausado) return;
+  relogio=setInterval(()=>irPara(ufAt+1),TROCA);
+  depRelogio=setInterval(mostrarDeps,DEP_CADA);
+  if(modoDep) volta=setTimeout(()=>{trocarTela(false);ligarRelogios();},DEP_DURA);
+}
+function botaoPausa(){const b=$('pausa');b.classList.toggle('on',pausado);b.querySelector('span').textContent=pausado?'Telas pausadas':'Pausar telas';b.querySelector('em').textContent=pausado?'Pausado':'Pausar';
+  b.querySelector('svg').innerHTML=pausado?'<path d="M7 4.5v15l12-7.5z"/>':'<path d="M8 5v14M16 5v14"/>';}
+$('pausa').onclick=()=>{pausado=!pausado;gravar('apuracao-pausa',pausado?'1':'0');botaoPausa();marcarChips();ligarRelogios();};
+botaoPausa();
 function marcarChips(){
   document.querySelectorAll('.uf').forEach(b=>{b.classList.remove('on');void b.offsetWidth;}); // reinicia a barrinha
   document.querySelectorAll('.uf').forEach(b=>b.classList.toggle('on',modoDep?b.dataset.i==='dep':b.dataset.i===String(ufAt)));
 }
 function irPara(i){
   ufAt=(i+ESTADOS.length)%ESTADOS.length;
-  clearInterval(relogio);relogio=setInterval(()=>irPara(ufAt+1),TROCA);
-  if(modoDep){clearTimeout(volta);trocarTela(false);return;}
-  marcarChips();deslizar();
+  if(modoDep){trocarTela(false);ligarRelogios();return;}
+  marcarChips();deslizar();ligarRelogios();
 }
 $('ufs').style.setProperty('--troca',TROCA+'ms');
 $('ufs').innerHTML=ESTADOS.map(([uf,nome],i)=>`<button class="uf" type="button" title="${nome}" data-i="${i}">${uf.toUpperCase()}</button>`).join('')
@@ -599,8 +613,7 @@ async function atualizar(){
 try{desenhar(ultimo||{});}catch(e){ultimo=null;try{desenhar({});}catch(e2){}}
 atualizar();
 setInterval(atualizar,INTERVALO);
-relogio=setInterval(()=>irPara(ufAt+1),TROCA);
-depRelogio=setInterval(mostrarDeps,DEP_CADA);
+ligarRelogios();
 buscarDeps().catch(()=>{});setInterval(()=>{if(!modoDep)buscarDeps().catch(()=>{});},60000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){atualizar();acordar();}});
 addEventListener('online',atualizar);
