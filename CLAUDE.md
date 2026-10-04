@@ -12,7 +12,8 @@ Projeto próprio desde 2026-10-04, separado do Ritmo (antes morava em `mei-finan
 
 ## Fonte dos números (TSE)
 - Base: `https://resultados.tse.jus.br/oficial/ele2026/`. O TSE libera CORS pro `joonetoo.github.io`.
-- 1º turno (04/10): eleição **6257** Presidente (`br-c0001`), **6259** Governador PR (`pr-c0003`) e Senado PR (`pr-c0005`).
+- 1º turno (04/10): eleição **6257** Presidente (`br-c0001`), **6259** Governador (`<uf>-c0003`) e Senado (`<uf>-c0005`) de PR, SP, RS, PE e MG.
+- Busca a cada 10 s. Presidente fica fixo em cima; Governador e Senado (3 mais votados) trocam de estado a cada 30 s, deslizando.
 - 2º turno (25/10): eleição **6258** Presidente, **6260** Governador PR (só se o PR tiver 2º turno).
 - Lê os dois formatos: `dados/<uf>/<uf>-cXXXX-eXXXXXX-u.json` (completo) e `dados-simplificados/…-r.json`; fica com o mais adiantado.
 - Troca sozinho pro 2º turno quando o arquivo de Presidente da 6258 aparece. Senado (e Governador, se não houver 2º turno no PR) mostram o resultado final do 1º.
