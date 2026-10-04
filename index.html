@@ -307,9 +307,9 @@ async function buscarArquivo(ele,uf,cargo){
 /* ---------- desenho ---------- */
 function montar(r,fixos){
   // candidatos: os do arquivo do TSE; sem arquivo ainda, a lista oficial do 1º turno
-  const base=r&&r.lista.length?r.lista:(fixos||[]).map(([n,nm,sg,sq])=>({n,nm,sg,sq,ele:ELEICAO[1].pres,uf:'br'}));
+  const base=r&&Array.isArray(r.lista)&&r.lista.length?r.lista:(fixos||[]).map(([n,nm,sg,sq])=>({n,nm,sg,sq,ele:ELEICAO[1].pres,uf:'br'}));
   const tot=r?r.vv:0;
-  return base.map(c=>{const x=(r&&r.votos[c.n])||{v:0,pc:0,e:'',st:''};return {...c,v:x.v,pc:x.pc||(tot?x.v/tot*100:0),e:x.e,st:x.st};})
+  return base.map(c=>{const x=(r&&r.votos&&r.votos[c.n])||{v:0,pc:0,e:'',st:''};return {...c,v:x.v,pc:x.pc||(tot?x.v/tot*100:0),e:x.e,st:x.st};})
     .sort((a,b)=>(b.v-a.v)||a.nm.localeCompare(b.nm,'pt-BR'));
 }
 function foto(c){return FOTOS_LOCAIS.has(c.sq)?`fotos/${c.sq}.jpeg`:fotoTSE(c.ele,c.uf,c.sq);}
@@ -391,7 +391,8 @@ function estado(txt,tipo){const e=$('estado');e.hidden=!txt;e.textContent=txt||'
 
 /* ---------- busca a cada 30 s ---------- */
 let ultimo=null,buscando=false,falhas=0;
-try{ultimo=JSON.parse(ler('apuracao-ultimo')||'null');}catch(e){}
+try{const g=JSON.parse(ler('eleicoes-ultimo')||'null');if(g&&g.v===2&&g.pres!==undefined)ultimo=g;}catch(e){}
+try{localStorage.removeItem('apuracao-ultimo');}catch(e){} // anotação do app antigo (formato velho)
 async function atualizar(){
   if(buscando) return; buscando=true;
   try{
@@ -401,10 +402,10 @@ async function atualizar(){
       buscarArquivo(E1.pres,'br','0001'),buscarArquivo(E1.est,'pr','0003'),buscarArquivo(E1.est,'pr','0005')]);
     falhas=0;
     const turno=pres2?2:1;
-    const novo={turno,pres:turno===2?pres2:pres1,gov,sen,gov2};
+    const novo={v:2,turno,pres:turno===2?pres2:pres1,gov,sen,gov2};
     // nunca volta pra trás: resposta mais atrasada que a da tela não substitui
     if(ultimo&&ultimo.turno===novo.turno) for(const k of ['pres','gov','sen','gov2']) if(ultimo[k]&&(!novo[k]||novo[k].pst<ultimo[k].pst)) novo[k]=ultimo[k];
-    ultimo=novo; gravar('apuracao-ultimo',JSON.stringify(novo));
+    ultimo=novo; gravar('eleicoes-ultimo',JSON.stringify(novo));
     desenhar(novo);
     const p=novo.pres,pst=p?p.pst:0;
     if(!p||(!pst&&!p.vv)) estado(turno===2?'2º turno: aguardando os primeiros números do TSE (a partir das 17h do dia da votação). A tela atualiza sozinha.':'Aguardando os primeiros números do TSE (previsto para as 17h). A tela atualiza sozinha.');
@@ -415,7 +416,7 @@ async function atualizar(){
     estado(falhas>1?'Sem conexão com o TSE agora. Os números na tela são os últimos que chegaram; tentando de novo a cada 30 segundos.':'','erro');
   }finally{buscando=false;}
 }
-desenhar(ultimo||{});
+try{desenhar(ultimo||{});}catch(e){ultimo=null;try{desenhar({});}catch(e2){}}
 atualizar();
 setInterval(atualizar,INTERVALO);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){atualizar();acordar();}});
