@@ -223,6 +223,42 @@ main{max-width:1480px;margin:0 auto;padding:10px 16px 8px;display:flex;flex-dire
 .uf.on:after{content:"";position:absolute;left:0;bottom:0;height:3px;background:currentColor;opacity:.55;animation:anda var(--troca) linear forwards}
 @keyframes anda{from{width:0}to{width:100%}}
 @media (max-width:760px){.ufs{margin-top:12px}.uf{flex:1;padding:8px 0}}
+.uf.ufdep{padding-inline:14px}
+/* tela dos deputados */
+body.modoDep main>.pres,body.modoDep main>.faixa,body.modoDep main>.urnas{display:none}
+.deps{padding:16px 18px 18px;display:flex;flex-direction:column;gap:12px}
+.depcab{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;padding:0 6px}
+.depcab h2{font-size:30px}
+.depcab h2 b{font-weight:800}
+.depcols{flex:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;min-height:0}
+.depcol{display:flex;flex-direction:column;gap:8px;min-height:0}
+.depuf{display:flex;align-items:baseline;gap:12px;padding:0 8px}
+.depuf .lugar{font-size:17px;color:var(--texto)}
+.deplist{list-style:none;margin:0;padding:0;flex:1;display:grid;grid-template-rows:repeat(10,minmax(0,1fr));gap:6px;min-height:0}
+.dep{position:relative;display:grid;grid-template-columns:26px auto minmax(0,1fr) auto;align-items:center;gap:0 12px;padding:4px 14px 4px 8px;border-radius:14px;background:rgba(31,35,41,.035);overflow:hidden}
+.dep:first-child{background:color-mix(in srgb,var(--c) 13%,transparent)!important}
+.dep .rk{font-size:clamp(16px,2.4vh,22px);font-weight:800;color:var(--fraco);text-align:center;font-variant-numeric:tabular-nums}
+.dep img{width:clamp(36px,5.4vh,54px);height:clamp(36px,5.4vh,54px);border-radius:50%;object-fit:cover;object-position:50% 18%;box-shadow:0 0 0 2px var(--c);background:var(--linha)}
+.dep .nm{font-weight:800;font-size:clamp(15px,2.2vh,21px);line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dep .ptd{margin-top:2px;font-size:12px}
+.dep .dir{text-align:right}
+.dep .vv{font-weight:800;font-size:clamp(17px,2.7vh,25px);font-variant-numeric:tabular-nums;line-height:1.1}
+.dep .pp{font-size:12px;color:var(--suave);font-variant-numeric:tabular-nums}
+.dep .barra{position:absolute;left:0;bottom:0;height:3px;right:0}
+.dep .barra i{display:block;height:100%;opacity:.8;transition:width .8s}
+@media (min-width:821px){
+  body{display:flex;flex-direction:column}
+  main{flex:1;width:100%}
+  body.modoDep{height:100vh;min-height:640px}
+  .deps{flex:1;min-height:0}
+  .dep{background:var(--lado)}
+}
+@media (max-width:760px){
+  .depcols{grid-template-columns:1fr}
+  .deplist{grid-template-rows:none}
+  .dep{padding:8px 14px 8px 6px;gap:0 10px}
+  .depcab h2{font-size:24px}
+}
 
 </style>
 </head>
@@ -267,6 +303,10 @@ main{max-width:1480px;margin:0 auto;padding:10px 16px 8px;display:flex;flex-dire
     <div class="top"><span class="tit">Urnas apuradas no Brasil</span><span class="ja" id="apP">0,00%</span><span class="sec" id="secP"></span><span class="falta">Faltam <b id="faltaP">100,00%</b></span></div>
     <div class="trilho"><i id="trP"></i></div>
   </section>
+  <section class="cargo deps" id="deps" aria-label="Deputados federais mais votados" hidden>
+    <div class="depcab"><h2>Deputados federais <b>mais votados</b></h2><span class="regra">Os 10 com mais votos em cada estado</span></div>
+    <div class="depcols" id="depcols"></div>
+  </section>
 </main>
 
 <script>
@@ -293,10 +333,12 @@ const CAND={
 const FOTOS_LOCAIS=new Set(Object.values(CAND).flat().map(c=>c[3]));
 const chaveNome=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Za-z ]/g,'').toUpperCase().replace(/\s+/g,' ').trim();
 const NOME_POR_CODIGO={},NOME_POR_URNA={};Object.values(CAND).flat().forEach(c=>{NOME_POR_CODIGO[c[3]]=c[1];NOME_POR_URNA[chaveNome(c[1])]=c[1];});
-const COR={PT:'#D60828',PL:'#272D97',PSD:'#A0A00B',NOVO:'#4083A6',PDT:'#2569AD',REPUBLICANOS:'#3C678A',UP:'#454545','MISSÃO':'#D8942F',PCO:'#923D00',PSTU:'#B35454',MOBILIZA:'#C36969',PCB:'#E54B5A',DC:'#AB7C24',AVANTE:'#4C8790',DEMOCRATA:'#13617C',MDB:'#1F8A4C',PSB:'#E89B0C',PSOL:'#7B2D8E',PP:'#2E5DA8',PSDB:'#1C5BA8',REDE:'#2CA58D',CIDADANIA:'#D9487E',PODE:'#2DA44E',AGIR:'#1C6E8C',PV:'#3FA34D',SOLIDARIEDADE:'#F47C20',PRD:'#203D7B'};
-// estados que vão passando nas faixas de Governador e Senado (troca a cada 30 s)
+const COR={PT:'#D60828',PL:'#272D97',PSD:'#A0A00B',NOVO:'#4083A6',PDT:'#2569AD',REPUBLICANOS:'#3C678A',UP:'#454545','MISSÃO':'#D8942F',PCO:'#923D00',PSTU:'#B35454',MOBILIZA:'#C36969',PCB:'#E54B5A',DC:'#AB7C24',AVANTE:'#4C8790',DEMOCRATA:'#13617C',MDB:'#1F8A4C',PSB:'#E89B0C',PSOL:'#7B2D8E',PP:'#2E5DA8',PSDB:'#1C5BA8',REDE:'#2CA58D',CIDADANIA:'#D9487E',PODE:'#2DA44E',AGIR:'#1C6E8C',PV:'#3FA34D',SOLIDARIEDADE:'#F47C20',PRD:'#203D7B','UNIÃO':'#0F4C9C',PCdoB:'#C4122F',PRTB:'#2F8F3A'};
+// estados que vão passando nas faixas de Governador e Senado (troca a cada 1 min)
 const ESTADOS=[['pr','Paraná'],['sp','São Paulo'],['rs','Rio Grande do Sul'],['pe','Pernambuco'],['mg','Minas Gerais']];
-const TROCA=30000;
+const TROCA=60000;
+// tela extra dos deputados federais mais votados: entra a cada 5 min e fica 30 s
+const DEP_UFS=[['pr','Paraná'],['sp','São Paulo'],['mg','Minas Gerais']],DEP_CADA=5*60000,DEP_DURA=30000;
 const COR_TEXTO={PT:'var(--ptTx)',PL:'var(--plTx)'};
 const INTERVALO=10000;
 
@@ -430,41 +472,83 @@ function desenharEstado(D){
   cards($('lS'),montar(E.sen,pr?CAND.sen:null));
   $('lugarS').textContent=t2?nomeUF+' · resultado do 1º turno':nomeUF;
   document.querySelectorAll('.ufTx').forEach(e=>e.textContent=(uf==='pe'?'de ':'do ')+uf.toUpperCase());
-  document.querySelectorAll('.uf').forEach((b,i)=>b.classList.toggle('on',i===ufAt));
+  marcarChips();
 }
-// troca de estado deslizando: o que está na tela sai pra esquerda, o novo entra pela direita, um cartão de cada vez
+// troca deslizando: o que está na tela sai pra esquerda, o novo entra pela direita, uma peça de cada vez
 let deslizando=null,saindo=false;
-function deslizar(){
+const parar=els=>els.forEach(el=>el&&el.getAnimations().forEach(a=>a.cancel()));
+function slide(sai,trocar,entra,passo){
   const calmo=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(calmo||document.hidden){deslizando=null;saindo=false;desenharEstado(ultimo||{});return;} // aba escondida: animação não roda, troca direto
-  const faixas=[...document.querySelectorAll('.faixa')];
-  const pecas=f=>[f.querySelector('.cab'),...f.querySelectorAll('.card')];
+  if(calmo||document.hidden){deslizando=null;saindo=false;parar(sai);trocar();return;} // aba escondida: animação não roda, troca direto
   const minha=deslizando=Symbol();saindo=true;
-  faixas.forEach(f=>pecas(f).forEach(el=>el.getAnimations().forEach(a=>a.cancel())));
-  const saida=faixas.flatMap((f,j)=>pecas(f).map((el,i)=>el.animate(
+  parar(sai);
+  const saida=sai.map((el,i)=>el.animate(
     [{transform:'none',opacity:1,filter:'blur(0)'},{transform:'translateX(-90px)',opacity:0,filter:'blur(3px)'}],
-    {duration:380,delay:j*90+i*45,easing:'cubic-bezier(.55,0,.75,.2)',fill:'forwards'}).finished.catch(()=>{})));
+    {duration:380,delay:Math.min(i*45,400),easing:'cubic-bezier(.55,0,.75,.2)',fill:'forwards'}).finished.catch(()=>{}));
   // garantia: se a animação travar por qualquer motivo, troca mesmo assim em 1,2 s
   Promise.race([Promise.all(saida),new Promise(r=>setTimeout(r,1200))]).then(()=>{
     if(deslizando!==minha) return;
-    saindo=false;faixas.forEach(f=>pecas(f).forEach(el=>el.getAnimations().forEach(a=>a.cancel())));desenharEstado(ultimo||{});
-    faixas.forEach((f,j)=>pecas(f).forEach((el,i)=>{
-      el.getAnimations().forEach(a=>a.cancel());
+    saindo=false;parar(sai);trocar();
+    entra().forEach((el,i)=>{parar([el]);
       el.animate([{transform:'translateX(120px)',opacity:0,filter:'blur(3px)'},{transform:'none',opacity:1,filter:'blur(0)'}],
-        {duration:720,delay:j*110+i*80,easing:'cubic-bezier(.16,1,.3,1)',fill:'backwards'});
-    }));
+        {duration:720,delay:i*(passo||80),easing:'cubic-bezier(.16,1,.3,1)',fill:'backwards'});});
   });
 }
+const pecasEstado=()=>[...document.querySelectorAll('.faixa')].flatMap(f=>[f.querySelector('.cab'),...f.querySelectorAll('.card')]);
+const pecasPainel=()=>[...document.querySelectorAll('main>.pres,main>.faixa,main>.urnas')];
+const pecasDeps=()=>[$('deps').querySelector('.depcab'),...$('deps').querySelectorAll('.depuf,.dep')];
+function deslizar(){slide(pecasEstado(),()=>desenharEstado(ultimo||{}),pecasEstado);}
+
+/* ---------- tela dos deputados federais (PR, SP e MG) ---------- */
+let deps={},modoDep=false,volta=null,depRelogio=null;
+$('depcols').innerHTML=DEP_UFS.map(([uf,nome])=>`<div class="depcol"><div class="depuf"><span class="lugar">${nome}</span><span class="ap"><b id="apD${uf}">0,00%</b> apurado</span></div><ol class="deplist" id="d${uf}"></ol></div>`).join('');
+async function buscarDeps(){
+  const r=await Promise.all(DEP_UFS.map(([uf])=>buscarArquivo(ELEICAO[1].est,uf,'0006').catch(()=>null)));
+  DEP_UFS.forEach(([uf],i)=>{const n=r[i],a=deps[uf];if(n&&(!a||n.pst>=a.pst))deps[uf]=n;});
+  if(modoDep&&!saindo) desenharDeps();
+}
+function desenharDeps(){
+  for(const [uf] of DEP_UFS){
+    const r=deps[uf],ord=montar(r,null).slice(0,10),max=Math.max(ord[0]?ord[0].v:0,1);
+    apurado('apD'+uf,r);
+    $('d'+uf).innerHTML=ord.length?ord.map((c,i)=>{const cor=COR[c.sg]||'#666';
+      return `<li class="dep" style="--c:${cor}"><span class="rk">${i+1}</span><img src="${foto(c)}" alt="Foto oficial de ${c.nm}">
+        <div><div class="nm">${c.nm}</div><div class="ptd"><span class="sg" style="background:${cor}">${c.sg}</span><span class="num">${c.n}</span>${etiqueta(c)}</div></div>
+        <div class="dir"><div class="vv">${ni(c.v)}</div><div class="pp">votos · ${nf(c.pc)}%</div></div>
+        <span class="barra"><i style="width:${c.v/max*100}%;background:${cor}"></i></span></li>`;}).join('')
+      :'<li class="regra">Aguardando os números do TSE.</li>';
+  }
+}
+function trocarTela(paraDep){
+  if(paraDep===modoDep) return;
+  modoDep=paraDep;marcarChips();
+  slide(paraDep?pecasPainel():pecasDeps(),()=>{
+    document.body.classList.toggle('modoDep',paraDep);$('deps').hidden=!paraDep;
+    if(paraDep) desenharDeps(); else desenharEstado(ultimo||{});
+  },paraDep?pecasDeps:pecasPainel,paraDep?35:110);
+}
+function mostrarDeps(){
+  buscarDeps().catch(()=>{});
+  trocarTela(true);marcarChips();
+  clearTimeout(volta);volta=setTimeout(()=>{trocarTela(false);clearInterval(relogio);relogio=setInterval(()=>irPara(ufAt+1),TROCA);},DEP_DURA);
+  clearInterval(depRelogio);depRelogio=setInterval(mostrarDeps,DEP_CADA);
+}
+
 let relogio=null;
+function marcarChips(){
+  document.querySelectorAll('.uf').forEach(b=>{b.classList.remove('on');void b.offsetWidth;}); // reinicia a barrinha
+  document.querySelectorAll('.uf').forEach(b=>b.classList.toggle('on',modoDep?b.dataset.i==='dep':b.dataset.i===String(ufAt)));
+}
 function irPara(i){
   ufAt=(i+ESTADOS.length)%ESTADOS.length;
-  document.querySelectorAll('.uf').forEach(b=>{b.classList.remove('on');void b.offsetWidth;}); // reinicia a barrinha
-  deslizar();
   clearInterval(relogio);relogio=setInterval(()=>irPara(ufAt+1),TROCA);
+  if(modoDep){clearTimeout(volta);trocarTela(false);return;}
+  marcarChips();deslizar();
 }
 $('ufs').style.setProperty('--troca',TROCA+'ms');
-$('ufs').innerHTML=ESTADOS.map(([uf,nome],i)=>`<button class="uf" type="button" title="${nome}" data-i="${i}">${uf.toUpperCase()}</button>`).join('');
-$('ufs').onclick=e=>{const b=e.target.closest('.uf');if(b)irPara(+b.dataset.i);};
+$('ufs').innerHTML=ESTADOS.map(([uf,nome],i)=>`<button class="uf" type="button" title="${nome}" data-i="${i}">${uf.toUpperCase()}</button>`).join('')
+  +`<button class="uf ufdep" type="button" title="Deputados federais mais votados do PR, SP e MG" data-i="dep" style="--troca:${DEP_DURA}ms">DEPUTADOS</button>`;
+$('ufs').onclick=e=>{const b=e.target.closest('.uf');if(!b)return;if(b.dataset.i==='dep')mostrarDeps();else irPara(+b.dataset.i);};
 function estado(txt,tipo){const e=$('estado');e.hidden=!txt;e.textContent=txt||'';e.className='demo'+(tipo?' '+tipo:'');}
 
 /* ---------- busca a cada 10 s ---------- */
@@ -492,6 +576,7 @@ async function atualizar(){
     }
     ultimo=novo; gravar('eleicoes-ultimo',JSON.stringify(novo));
     desenhar(novo);
+    if(modoDep) buscarDeps().catch(()=>{});
     const p=novo.pres,pst=p?p.pst:0;
     if(!p||(!pst&&!p.vv)) estado(turno===2?'2º turno: aguardando os primeiros números do TSE (a partir das 17h do dia da votação). A tela atualiza sozinha.':'Aguardando os primeiros números do TSE (previsto para as 17h). A tela atualiza sozinha.');
     else if(pst>=100) estado(`Apuração de Presidente do ${turno}º turno encerrada: 100% das seções.`,'ok');
@@ -505,6 +590,8 @@ try{desenhar(ultimo||{});}catch(e){ultimo=null;try{desenhar({});}catch(e2){}}
 atualizar();
 setInterval(atualizar,INTERVALO);
 relogio=setInterval(()=>irPara(ufAt+1),TROCA);
+depRelogio=setInterval(mostrarDeps,DEP_CADA);
+buscarDeps().catch(()=>{});setInterval(()=>{if(!modoDep)buscarDeps().catch(()=>{});},60000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){atualizar();acordar();}});
 addEventListener('online',atualizar);
 
