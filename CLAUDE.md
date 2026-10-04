@@ -18,7 +18,7 @@ Projeto próprio desde 2026-10-04, separado do Ritmo (antes morava em `mei-finan
   - PR: painel fixo (Presidente Lula x Flávio, Governador PR top 3, Senado PR top 3, barra das urnas do Brasil).
   - SENADORES: disputa do Senado do estado escolhido (8 mais votados; `apuracao-sen`).
   - DEPUTADOS: filtro estado / federal-estadual / eleitos-mais votados (`apuracao-dep`); vagas de `carg[0].nv`; páginas de 30 pelas setas.
-  - CÂMARA (513, soma eleitos dos 27 estados) e SENADO (81 = 27 de 2022 fixas em `SEN2022`, de memória, + 54 de hoje). Esquerda vermelho, centro cinza (PSD, MDB, PSDB, Cidadania, Solidariedade, Avante), direita azul — listas `ESQ`/`CENTRO`.
+  - CÂMARA (513, soma eleitos dos 27 estados) e SENADO (81 = 27 de 2022 fixas em `SEN2022`, de memória, + 54 de hoje). Esquerda vermelho, centro cinza (PSD, MDB, PSDB, Cidadania, Solidariedade, Avante), direita azul — listas `ESQ`/`CENTRO`. Passar o mouse (ou tocar) numa cadeira mostra nome, partido, UF, votos e situação.
 - Lê os dois formatos: `dados/<uf>/…-u.json` (completo) e `dados-simplificados/…-r.json`; fica com o mais adiantado.
 - Fotos oficiais: `…/<eleição>/fotos/<uf>/<sqcand>.jpeg` (cópias locais em `fotos/`; candidato novo cai na foto do TSE).
 

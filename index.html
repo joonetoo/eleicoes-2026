@@ -254,6 +254,13 @@ body.extra main>.pres,body.extra main>.faixa,body.extra main>.urnas{display:none
 .plendesenho .sub{font:600 .05px var(--f);fill:var(--suave)}
 .plendesenho .mai{stroke:var(--texto);stroke-width:.006;stroke-dasharray:.02 .015;opacity:.6}
 .plenlado{display:flex;flex-direction:column;gap:12px}
+.plendesenho circle{cursor:pointer;transition:stroke-width .12s}
+.plendesenho circle.foco{stroke:var(--texto);stroke-width:.012;stroke-opacity:1}
+.dica{position:fixed;z-index:70;pointer-events:none;max-width:280px;background:var(--toastBg);-webkit-backdrop-filter:blur(20px) saturate(1.6);backdrop-filter:blur(20px) saturate(1.6);border:1px solid var(--vidroBorda);box-shadow:0 14px 34px -12px rgba(0,0,0,.35);border-radius:14px;padding:9px 12px;display:flex;flex-direction:column;gap:3px;font-size:13px;color:var(--suave)}
+.dica b{font-size:15px;color:var(--texto)}
+.dica span{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-variant-numeric:tabular-nums}
+.dica i{font-style:normal;color:#fff;font-weight:700;font-size:10px;padding:1px 5px;border-radius:4px}
+.dica em{font-style:normal;font-weight:800;color:var(--ok)}
 .bloco{border-radius:18px;padding:12px 16px;background:var(--lado,rgba(31,35,41,.035));box-shadow:inset 6px 0 0 var(--c)}
 .bloco .bt1{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
 .bloco .bn{font-size:17px;font-weight:800}
@@ -644,7 +651,7 @@ const pecasPlen=id=>()=>[...$(id).children];
 const PECAS={painel:pecasPainel,deps:pecasDeps,camara:pecasPlen('camara'),senado:pecasPlen('senado'),senadores:()=>[$('senadores').querySelector('.plencab'),...$('senadores').querySelectorAll('.scard,.depvazio')]};
 function trocarTela(nova){
   if(nova===tela) return;
-  const velha=tela;tela=nova;marcarChips();
+  const velha=tela;tela=nova;marcarChips();dica.hidden=true;
   slide(PECAS[velha](),()=>{
     document.body.classList.toggle('extra',nova!=='painel');
     for(const id of ['deps','camara','senado','senadores']) $(id).hidden=id!==nova;
@@ -688,10 +695,30 @@ function desenharPlenario(el,cadeiras,legenda){
   el.innerHTML=`<svg viewBox="-1.06 -1.06 2.12 1.14" role="img" aria-label="${legenda}">
     <line class="mai" x1="0" y1="-.32" x2="0" y2="-1.04"/>
     ${pts.map((p,i)=>{const c=ord[i]||{};const f=c.b?`fill="${cor[c.b]}"${c.f?' fill-opacity=".38"':''}`:'fill="none" stroke="currentColor" stroke-opacity=".28" stroke-width=".006"';
-      return `<circle cx="${p.x.toFixed(4)}" cy="${(-p.y).toFixed(4)}" r="${(c.b?raio:raio*.86).toFixed(4)}" ${f}/>`;}).join('')}
+      return `<circle data-i="${i}" cx="${p.x.toFixed(4)}" cy="${(-p.y).toFixed(4)}" r="${(c.b?raio:raio*.86).toFixed(4)}" ${f}/>`;}).join('')}
     <text class="tot" x="0" y="-.1" text-anchor="middle">${N}</text>
     <text class="sub" x="0" y="-.02" text-anchor="middle">cadeiras · maioria ${maioria}</text>
   </svg>`;
+  el._cad=ord;ligarDica(el);
+}
+// balãozinho ao passar o mouse (ou tocar) numa cadeira: nome, partido, estado, votos e situação
+const dica=document.createElement('div');dica.className='dica';dica.hidden=true;document.body.appendChild(dica);
+function textoDica(c){
+  const uf=(c.uf||'').toUpperCase();
+  if(!c.b) return `<b>Cadeira a definir</b><span>${uf?uf+' · ':''}o TSE ainda não confirmou</span>`;
+  const sit=c.ano===2022?'eleito em 2022 · mandato até 2031':c.f?'na frente · ainda sem confirmação do TSE':'<em>ELEITO</em>';
+  return `<b>${c.nm||c.sg}</b><span><i style="background:${COR[c.sg]||'#666'}">${c.sg}</i>${uf}${c.v?` · ${ni(c.v)} votos`:''}</span><span>${sit}</span>`;
+}
+function ligarDica(el){
+  if(el._dica) return; el._dica=true;
+  const mostra=e=>{const b=e.target.closest('circle[data-i]');if(!b||!el._cad){dica.hidden=true;el.querySelectorAll('.foco').forEach(x=>x.classList.remove('foco'));return;}
+    el.querySelectorAll('.foco').forEach(x=>x!==b&&x.classList.remove('foco'));b.classList.add('foco');
+    dica.innerHTML=textoDica(el._cad[+b.dataset.i]||{});dica.hidden=false;
+    const w=dica.offsetWidth,h=dica.offsetHeight;let x=e.clientX+14,y=e.clientY-h-12;
+    if(x+w>innerWidth-8)x=e.clientX-w-14; if(y<8)y=e.clientY+16;
+    dica.style.left=x+'px';dica.style.top=y+'px';};
+  el.addEventListener('pointermove',mostra);el.addEventListener('click',mostra);
+  el.addEventListener('pointerleave',()=>{dica.hidden=true;el.querySelectorAll('.foco').forEach(x=>x.classList.remove('foco'));});
 }
 function legendaPlen(el,cadeiras,extra){
   const N=cadeiras.length,pend=cadeiras.filter(c=>!c.b).length;
@@ -718,8 +745,8 @@ function desenharCamara(){
     const r=camara[uf];if(!r){faltaArq++;continue;}
     const vagas=r.nv||0,el=montar(r,null).filter(eleito).slice(0,vagas);
     if(el.length>=vagas&&vagas)estadosOk++;
-    el.forEach(c=>cad.push({b:bloco(c.sg),sg:c.sg}));
-    for(let k=el.length;k<vagas;k++)cad.push({b:null});
+    el.forEach(c=>cad.push({b:bloco(c.sg),sg:c.sg,nm:c.nm,uf,v:c.v}));
+    for(let k=el.length;k<vagas;k++)cad.push({b:null,uf});
   }
   $('camVagas').textContent=cad.length||513;
   desenharPlenario($('camDes'),cad.length?cad:[...Array(513)].map(()=>({b:null})),'Câmara dos Deputados');
@@ -740,12 +767,12 @@ async function buscarSenado(forcar){
   if(tela==='senadores'&&!saindo) desenharSenadores();
 }
 function desenharSenado(){
-  const cad=SEN2022.map(([uf,nm,sg])=>({b:bloco(sg),sg}));let conf=0,frente=0;
+  const cad=SEN2022.map(([uf,nm,sg])=>({b:bloco(sg),sg,nm,uf,ano:2022}));let conf=0,frente=0;
   for(const [uf] of UFS){
     const r=senado[uf],vagas=(r&&r.nv)||2,todos=montar(r,null),el=todos.filter(eleito);
     const escolhidos=el.length?el.slice(0,vagas):(r&&r.vv?todos.slice(0,vagas):[]);
-    escolhidos.forEach(c=>{const f=!eleito(c);f?frente++:conf++;cad.push({b:bloco(c.sg),sg:c.sg,f});});
-    for(let k=escolhidos.length;k<vagas;k++)cad.push({b:null});
+    escolhidos.forEach(c=>{const f=!eleito(c);f?frente++:conf++;cad.push({b:bloco(c.sg),sg:c.sg,f,nm:c.nm,uf,v:c.v});});
+    for(let k=escolhidos.length;k<vagas;k++)cad.push({b:null,uf});
   }
   desenharPlenario($('senDes'),cad,'Senado Federal');
   legendaPlen($('senLeg'),cad,`${conf} de 54 vagas de hoje confirmadas`);
