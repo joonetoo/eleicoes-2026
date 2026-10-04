@@ -229,11 +229,17 @@ body.modoDep main>.pres,body.modoDep main>.faixa,body.modoDep main>.urnas{displa
 .deps{padding:16px 18px 18px;display:flex;flex-direction:column;gap:12px}
 .depcab{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;padding:0 6px}
 .depcab h2{font-size:30px}
+.depcab .lugar{font-size:15px;color:var(--texto)}
+.depnota{flex-basis:100%;margin-top:-6px}
+.depconta{font-size:.6em;font-weight:800;color:var(--ok);background:var(--okBg);padding:3px 10px;border-radius:99px;vertical-align:middle}
+.comEleitos .dep:first-child{background:var(--lado)}
+.dep.el,.comEleitos .dep.el:first-child{background:color-mix(in srgb,var(--ok) 15%,transparent)!important;box-shadow:inset 5px 0 0 var(--ok)}
+.dep.el .rk{color:var(--ok)}
+.comEleitos .dep:not(.el){opacity:.5}
+.dep .tag.el{font-size:12px;padding:2px 8px}
 .depcab h2 b{font-weight:800}
 .depcols{flex:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;min-height:0}
 .depcol{display:flex;flex-direction:column;gap:8px;min-height:0}
-.depuf{display:flex;align-items:baseline;gap:12px;padding:0 8px}
-.depuf .lugar{font-size:17px;color:var(--texto)}
 .deplist{list-style:none;margin:0;padding:0;flex:1;display:grid;grid-template-rows:repeat(10,minmax(0,1fr));gap:6px;min-height:0}
 .dep{position:relative;display:grid;grid-template-columns:26px auto minmax(0,1fr) auto;align-items:center;gap:0 12px;padding:4px 14px 4px 8px;border-radius:14px;background:rgba(31,35,41,.035);overflow:hidden}
 .dep:first-child{background:color-mix(in srgb,var(--c) 13%,transparent)!important}
@@ -303,8 +309,9 @@ body.modoDep main>.pres,body.modoDep main>.faixa,body.modoDep main>.urnas{displa
     <div class="top"><span class="tit">Urnas apuradas no Brasil</span><span class="ja" id="apP">0,00%</span><span class="sec" id="secP"></span><span class="falta">Faltam <b id="faltaP">100,00%</b></span></div>
     <div class="trilho"><i id="trP"></i></div>
   </section>
-  <section class="cargo deps" id="deps" aria-label="Deputados federais mais votados" hidden>
-    <div class="depcab"><h2>Deputados federais <b>mais votados</b></h2><span class="regra">Os 10 com mais votos em cada estado</span></div>
+  <section class="cargo deps" id="deps" aria-label="Deputados federais do Paraná" hidden>
+    <div class="depcab"><span class="lugar">Paraná · 30 cadeiras</span><h2 id="depTit">Deputados federais <b>mais votados</b></h2><span class="ap"><b id="apDep">0,00%</b> das seções do PR</span>
+      <span class="regra depnota">As cadeiras são divididas pelos votos de cada partido, então nem todo mais votado entra. A etiqueta ELEITO aparece quando o TSE confirmar.</span></div>
     <div class="depcols" id="depcols"></div>
   </section>
 </main>
@@ -337,8 +344,8 @@ const COR={PT:'#D60828',PL:'#272D97',PSD:'#A0A00B',NOVO:'#4083A6',PDT:'#2569AD',
 // estados que vão passando nas faixas de Governador e Senado (troca a cada 1 min)
 const ESTADOS=[['pr','Paraná'],['sp','São Paulo'],['rs','Rio Grande do Sul'],['pe','Pernambuco'],['mg','Minas Gerais']];
 const TROCA=60000;
-// tela extra dos deputados federais mais votados: entra a cada 5 min e fica 30 s
-const DEP_UFS=[['pr','Paraná'],['sp','São Paulo'],['mg','Minas Gerais']],DEP_CADA=5*60000,DEP_DURA=30000;
+// tela extra dos deputados federais do Paraná (30 cadeiras): os 30 mais votados, entra a cada 5 min e fica 30 s
+const DEP_UF='pr',DEP_VAGAS=30,DEP_CADA=5*60000,DEP_DURA=30000;
 const COR_TEXTO={PT:'var(--ptTx)',PL:'var(--plTx)'};
 const INTERVALO=10000;
 
@@ -348,7 +355,7 @@ const ni=n=>Math.round(n).toLocaleString('pt-BR');
 const num=s=>{if(s==null||s==='')return 0;if(typeof s==='number')return s;const t=String(s).trim();return parseFloat(t.includes(',')?t.replace(/\./g,'').replace(',','.'):t)||0;};
 const ler=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
 const gravar=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
-const titulo=s=>String(s||'').toLowerCase().replace(/(^|[\s'])\S/g,m=>m.toUpperCase()).replace(/\b(Do|De|Da|Dos|Das)\b/g,m=>m.toLowerCase());
+const titulo=s=>String(s||'').toLowerCase().replace(/(^|[\s'])\S/g,m=>m.toUpperCase()).replace(/\s(Do|De|Da|Dos|Das)(?=\s|$)/g,m=>m.toLowerCase());
 
 /* ---------- leitura dos arquivos do TSE (aceita os dois formatos) ---------- */
 function interpretar(d,ele,uf){
@@ -389,6 +396,7 @@ function montar(r,fixos){
 function ordem(fixos,n){const i=(fixos||[]).findIndex(f=>f[0]===n);return i<0?999:i;
 }
 function foto(c){return FOTOS_LOCAIS.has(c.sq)?`fotos/${c.sq}.jpeg`:fotoTSE(c.ele,c.uf,c.sq);}
+const eleito=c=>{const st=(c.st||'').toLowerCase();return c.e==='s'||(st.includes('eleito')&&!st.includes('não')&&!st.includes('nao'));};
 function etiqueta(c){
   const st=(c.st||'').toLowerCase();
   if(st.includes('2º turno')||st.includes('2o turno')||st.includes('segundo turno')) return '<span class="tag t2">2º TURNO</span>';
@@ -496,28 +504,30 @@ function slide(sai,trocar,entra,passo){
 }
 const pecasEstado=()=>[...document.querySelectorAll('.faixa')].flatMap(f=>[f.querySelector('.cab'),...f.querySelectorAll('.card')]);
 const pecasPainel=()=>[...document.querySelectorAll('main>.pres,main>.faixa,main>.urnas')];
-const pecasDeps=()=>[$('deps').querySelector('.depcab'),...$('deps').querySelectorAll('.depuf,.dep')];
+const pecasDeps=()=>[$('deps').querySelector('.depcab'),...$('deps').querySelectorAll('.dep')];
 function deslizar(){slide(pecasEstado(),()=>desenharEstado(ultimo||{}),pecasEstado);}
 
-/* ---------- tela dos deputados federais (PR, SP e MG) ---------- */
+/* ---------- tela dos deputados federais do Paraná (30 cadeiras) ---------- */
 let deps={},modoDep=false,volta=null,depRelogio=null;
-$('depcols').innerHTML=DEP_UFS.map(([uf,nome])=>`<div class="depcol"><div class="depuf"><span class="lugar">${nome}</span><span class="ap"><b id="apD${uf}">0,00%</b> apurado</span></div><ol class="deplist" id="d${uf}"></ol></div>`).join('');
+$('depcols').innerHTML=[0,1,2].map(k=>`<div class="depcol"><ol class="deplist" id="dcol${k}"></ol></div>`).join('');
 async function buscarDeps(){
-  const r=await Promise.all(DEP_UFS.map(([uf])=>buscarArquivo(ELEICAO[1].est,uf,'0006').catch(()=>null)));
-  DEP_UFS.forEach(([uf],i)=>{const n=r[i],a=deps[uf];if(n&&(!a||n.pst>=a.pst))deps[uf]=n;});
+  const n=await buscarArquivo(ELEICAO[1].est,DEP_UF,'0006').catch(()=>null);
+  if(n&&(!deps.pr||n.pst>=deps.pr.pst)) deps.pr=n;
   if(modoDep&&!saindo) desenharDeps();
 }
 function desenharDeps(){
-  for(const [uf] of DEP_UFS){
-    const r=deps[uf],ord=montar(r,null).slice(0,10),max=Math.max(ord[0]?ord[0].v:0,1);
-    apurado('apD'+uf,r);
-    $('d'+uf).innerHTML=ord.length?ord.map((c,i)=>{const cor=COR[c.sg]||'#666';
-      return `<li class="dep" style="--c:${cor}"><span class="rk">${i+1}</span><img src="${foto(c)}" alt="Foto oficial de ${c.nm}">
-        <div><div class="nm">${c.nm}</div><div class="ptd"><span class="sg" style="background:${cor}">${c.sg}</span><span class="num">${c.n}</span>${etiqueta(c)}</div></div>
-        <div class="dir"><div class="vv">${ni(c.v)}</div><div class="pp">votos · ${nf(c.pc)}%</div></div>
-        <span class="barra"><i style="width:${c.v/max*100}%;background:${cor}"></i></span></li>`;}).join('')
-      :'<li class="regra">Aguardando os números do TSE.</li>';
-  }
+  // quando o TSE marcar os eleitos, eles vêm na frente (por votos) e ficam destacados em verde
+  const r=deps.pr,todos=montar(r,null),eleitos=todos.filter(eleito);
+  const ord=(eleitos.length?[...eleitos,...todos.filter(c=>!eleito(c))]:todos).slice(0,DEP_VAGAS),max=Math.max(...ord.map(c=>c.v),1);
+  apurado('apDep',r);
+  $('depTit').innerHTML=eleitos.length?`Deputados federais <b>eleitos</b> <span class="depconta">${eleitos.length} de ${DEP_VAGAS}</span>`:'Deputados federais <b>mais votados</b>';
+  $('deps').classList.toggle('comEleitos',eleitos.length>0);
+  const linha=(c,i)=>{const cor=COR[c.sg]||'#666';
+    return `<li class="dep${eleito(c)?' el':''}" style="--c:${cor}"><span class="rk">${i+1}</span><img src="${foto(c)}" alt="Foto oficial de ${c.nm}">
+      <div><div class="nm">${c.nm}</div><div class="ptd"><span class="sg" style="background:${cor}">${c.sg}</span><span class="num">${c.n}</span>${etiqueta(c)}</div></div>
+      <div class="dir"><div class="vv">${ni(c.v)}</div><div class="pp">votos · ${nf(c.pc)}%</div></div>
+      <span class="barra"><i style="width:${c.v/max*100}%;background:${cor}"></i></span></li>`;};
+  [0,1,2].forEach(k=>{$('dcol'+k).innerHTML=ord.slice(k*10,k*10+10).map((c,i)=>linha(c,k*10+i)).join('')||(k?'':'<li class="regra">Aguardando os números do TSE.</li>');});
 }
 function trocarTela(paraDep){
   if(paraDep===modoDep) return;
@@ -547,7 +557,7 @@ function irPara(i){
 }
 $('ufs').style.setProperty('--troca',TROCA+'ms');
 $('ufs').innerHTML=ESTADOS.map(([uf,nome],i)=>`<button class="uf" type="button" title="${nome}" data-i="${i}">${uf.toUpperCase()}</button>`).join('')
-  +`<button class="uf ufdep" type="button" title="Deputados federais mais votados do PR, SP e MG" data-i="dep" style="--troca:${DEP_DURA}ms">DEPUTADOS</button>`;
+  +`<button class="uf ufdep" type="button" title="Deputados federais do Paraná: os 30 mais votados" data-i="dep" style="--troca:${DEP_DURA}ms">DEPUTADOS</button>`;
 $('ufs').onclick=e=>{const b=e.target.closest('.uf');if(!b)return;if(b.dataset.i==='dep')mostrarDeps();else irPara(+b.dataset.i);};
 function estado(txt,tipo){const e=$('estado');e.hidden=!txt;e.textContent=txt||'';e.className='demo'+(tipo?' '+tipo:'');}
 
