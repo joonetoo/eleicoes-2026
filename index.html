@@ -113,6 +113,7 @@ main{max-width:1480px;margin:0 auto;padding:10px 16px 8px;display:flex;flex-dire
 /* Governador e Senado: 3 cartões */
 .faixa{display:grid;grid-template-columns:clamp(150px,14vw,210px) minmax(0,1fr);gap:14px;padding:14px 16px}
 .faixa .cab{display:flex;flex-direction:column;justify-content:center;gap:6px;padding-left:6px}
+.faixa .lugar{font-size:15px;color:var(--texto)}
 .tres{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .card{position:relative;border-radius:18px;padding:clamp(10px,1.6vh,18px) 16px;background:rgba(31,35,41,.035);display:grid;grid-template-columns:auto minmax(0,1fr);gap:0 14px;align-items:center;overflow:hidden;transition:background .6s}
 .card img{grid-row:1/5;width:var(--fotoC);height:var(--fotoC);border-radius:50%;object-fit:cover;object-position:50% 18%;border:3px solid var(--branco);box-shadow:0 0 0 2px var(--c);background:var(--linha)}
@@ -215,6 +216,14 @@ main{max-width:1480px;margin:0 auto;padding:10px 16px 8px;display:flex;flex-dire
 .card.frente{background:color-mix(in srgb,var(--c) 10%,transparent)!important}
 .vivo.parado i{animation:none;opacity:.5}
 .vazio .pc2,.vazio .pc{opacity:.45}
+/* estados que vão passando */
+.ufs{display:flex;gap:6px;flex-wrap:wrap}
+.uf{position:relative;overflow:hidden;font:700 13px var(--f);letter-spacing:.04em;color:var(--suave);background:var(--btBg,var(--branco));border:1px solid var(--borda);border-radius:99px;padding:6px 12px;cursor:pointer}
+.uf.on{background:var(--texto);color:var(--fundo);border-color:transparent}
+.uf.on:after{content:"";position:absolute;left:0;bottom:0;height:3px;background:currentColor;opacity:.55;animation:anda var(--troca) linear forwards}
+@keyframes anda{from{width:0}to{width:100%}}
+@media (max-width:760px){.ufs{margin-top:12px}.uf{flex:1;padding:8px 0}}
+
 </style>
 </head>
 <body>
@@ -224,6 +233,7 @@ main{max-width:1480px;margin:0 auto;padding:10px 16px 8px;display:flex;flex-dire
 <header class="topo">
   <div class="marca"><h1><b>APURAÇÃO</b> 2026</h1></div>
   <div class="linha2"><span class="vivo parado" id="vivo"><i></i><span id="vivoTx">AGUARDANDO</span></span><span class="info"><span id="turnoTx">1º turno</span> · fonte: TSE <span id="hora"></span></span></div>
+  <div class="ufs" id="ufs"></div>
   <span class="demo" id="estado">Aguardando os primeiros números do TSE (previsto para as 17h).</span>
   <div class="acoes">
     <button class="bt" id="som" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg><span>Ligar som</span><em>Som</em></button>
@@ -243,13 +253,13 @@ main{max-width:1480px;margin:0 auto;padding:10px 16px 8px;display:flex;flex-dire
   </section>
   <section class="cargo faixa" aria-label="Governador do Paraná">
     <div class="cab"><span class="lugar" id="lugarG">Paraná</span><h2>Governador</h2>
-      <span class="ap"><b id="apG">0,00%</b> das seções do PR</span>
+      <span class="ap"><b id="apG">0,00%</b> das seções <span class="ufTx">do PR</span></span>
       <span class="regra" id="regraG">Mais de 50% dos válidos vence no 1º turno.</span></div>
     <div class="tres" id="lG"></div>
   </section>
   <section class="cargo faixa" aria-label="Senado do Paraná">
     <div class="cab"><span class="lugar" id="lugarS">Paraná</span><h2>Senador</h2>
-      <span class="ap"><b id="apS">0,00%</b> das seções do PR</span>
+      <span class="ap"><b id="apS">0,00%</b> das seções <span class="ufTx">do PR</span></span>
       <span class="regra">2 vagas: os 2 mais votados são eleitos.</span></div>
     <div class="tres" id="lS"></div>
   </section>
@@ -283,7 +293,10 @@ const CAND={
 const FOTOS_LOCAIS=new Set(Object.values(CAND).flat().map(c=>c[3]));
 const chaveNome=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Za-z ]/g,'').toUpperCase().replace(/\s+/g,' ').trim();
 const NOME_POR_CODIGO={},NOME_POR_URNA={};Object.values(CAND).flat().forEach(c=>{NOME_POR_CODIGO[c[3]]=c[1];NOME_POR_URNA[chaveNome(c[1])]=c[1];});
-const COR={PT:'#D60828',PL:'#272D97',PSD:'#A0A00B',NOVO:'#4083A6',PDT:'#2569AD',REPUBLICANOS:'#3C678A',UP:'#454545','MISSÃO':'#D8942F',PCO:'#923D00',PSTU:'#B35454',MOBILIZA:'#C36969',PCB:'#E54B5A',DC:'#AB7C24',AVANTE:'#4C8790',DEMOCRATA:'#13617C'};
+const COR={PT:'#D60828',PL:'#272D97',PSD:'#A0A00B',NOVO:'#4083A6',PDT:'#2569AD',REPUBLICANOS:'#3C678A',UP:'#454545','MISSÃO':'#D8942F',PCO:'#923D00',PSTU:'#B35454',MOBILIZA:'#C36969',PCB:'#E54B5A',DC:'#AB7C24',AVANTE:'#4C8790',DEMOCRATA:'#13617C',MDB:'#1F8A4C',PSB:'#E89B0C',PSOL:'#7B2D8E',PP:'#2E5DA8',PSDB:'#1C5BA8',REDE:'#2CA58D',CIDADANIA:'#D9487E',PODE:'#2DA44E',AGIR:'#1C6E8C',PV:'#3FA34D',SOLIDARIEDADE:'#F47C20',PRD:'#203D7B'};
+// estados que vão passando nas faixas de Governador e Senado (troca a cada 30 s)
+const ESTADOS=[['pr','Paraná'],['sp','São Paulo'],['rs','Rio Grande do Sul'],['pe','Pernambuco'],['mg','Minas Gerais']];
+const TROCA=30000;
 const COR_TEXTO={PT:'var(--ptTx)',PL:'var(--plTx)'};
 const INTERVALO=10000;
 
@@ -293,7 +306,7 @@ const ni=n=>Math.round(n).toLocaleString('pt-BR');
 const num=s=>{if(s==null||s==='')return 0;if(typeof s==='number')return s;const t=String(s).trim();return parseFloat(t.includes(',')?t.replace(/\./g,'').replace(',','.'):t)||0;};
 const ler=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
 const gravar=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
-const titulo=s=>String(s||'').toLowerCase().replace(/(^|\s)\S/g,m=>m.toUpperCase()).replace(/\b(Do|De|Da|Dos|Das)\b/g,m=>m.toLowerCase());
+const titulo=s=>String(s||'').toLowerCase().replace(/(^|[\s'])\S/g,m=>m.toUpperCase()).replace(/\b(Do|De|Da|Dos|Das)\b/g,m=>m.toLowerCase());
 
 /* ---------- leitura dos arquivos do TSE (aceita os dois formatos) ---------- */
 function interpretar(d,ele,uf){
@@ -371,9 +384,9 @@ function lado(k,c){
 
 function desenhar(D){
   const t2=D.turno===2;
-  const {pres,gov,sen}=D;
+  const {pres}=D;
   document.body.classList.toggle('vazio',!(pres&&pres.vv));
-  urnas(pres);apurado('apG',gov);apurado('apS',sen);
+  urnas(pres);
 
   // Presidente: duelo grande. 1º turno = Lula x Flávio; 2º turno = os dois do arquivo (Lula sempre à esquerda)
   const P=montar(pres,CAND.pres);
@@ -386,14 +399,7 @@ function desenhar(D){
   else $('dif').innerHTML=`<b>${A.v>B.v?A.nm:B.nm}</b> à frente por <b>${ni(Math.abs(A.v-B.v))}</b> votos`;
   $('lugarP').textContent=t2?'Brasil · 2º turno':'Brasil';
 
-  // Governador: no 2º turno, se o Paraná tiver 2º turno usa ele; senão fica o resultado final do 1º
-  const govT2=t2&&D.gov2;
-  cards($('lG'),montar(govT2?D.gov2:gov,CAND.gov));
-  if(govT2) apurado('apG',D.gov2);
-  $('lugarG').textContent=t2?(govT2?'Paraná · 2º turno':'Paraná · resultado do 1º turno'):'Paraná';
-  $('regraG').textContent=govT2?'Quem tiver mais votos válidos vence.':'Mais de 50% dos válidos vence no 1º turno.';
-  cards($('lS'),montar(sen,CAND.sen));
-  $('lugarS').textContent=t2?'Paraná · resultado do 1º turno':'Paraná';
+  if(!saindo) desenharEstado(D); // no meio da saída não redesenha (o estado novo entra logo em seguida)
 
   // status do topo
   const pst=pres?pres.pst:0, fim=pst>=100;
@@ -412,24 +418,78 @@ function desenhar(D){
     if(lider) gravar(chave,lider);
   }
 }
+// Governador e Senado do estado da vez. No 2º turno, se o estado tiver 2º turno de Governador usa ele; senão fica o resultado final do 1º
+let ufAt=0;
+function desenharEstado(D){
+  const [uf,nomeUF]=ESTADOS[ufAt],E=(D&&D.est&&D.est[uf])||{},t2=D&&D.turno===2,pr=uf==='pr';
+  const govT2=t2&&E.gov2;
+  cards($('lG'),montar(govT2?E.gov2:E.gov,pr?CAND.gov:null));
+  apurado('apG',govT2?E.gov2:E.gov);apurado('apS',E.sen);
+  $('lugarG').textContent=t2?(govT2?nomeUF+' · 2º turno':nomeUF+' · resultado do 1º turno'):nomeUF;
+  $('regraG').textContent=govT2?'Quem tiver mais votos válidos vence.':'Mais de 50% dos válidos vence no 1º turno.';
+  cards($('lS'),montar(E.sen,pr?CAND.sen:null));
+  $('lugarS').textContent=t2?nomeUF+' · resultado do 1º turno':nomeUF;
+  document.querySelectorAll('.ufTx').forEach(e=>e.textContent=(uf==='pe'?'de ':'do ')+uf.toUpperCase());
+  document.querySelectorAll('.uf').forEach((b,i)=>b.classList.toggle('on',i===ufAt));
+}
+// troca de estado deslizando: o que está na tela sai pra esquerda, o novo entra pela direita, um cartão de cada vez
+let deslizando=null,saindo=false;
+function deslizar(){
+  const calmo=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(calmo||document.hidden){deslizando=null;saindo=false;desenharEstado(ultimo||{});return;} // aba escondida: animação não roda, troca direto
+  const faixas=[...document.querySelectorAll('.faixa')];
+  const pecas=f=>[f.querySelector('.cab'),...f.querySelectorAll('.card')];
+  const minha=deslizando=Symbol();saindo=true;
+  faixas.forEach(f=>pecas(f).forEach(el=>el.getAnimations().forEach(a=>a.cancel())));
+  const saida=faixas.flatMap((f,j)=>pecas(f).map((el,i)=>el.animate(
+    [{transform:'none',opacity:1,filter:'blur(0)'},{transform:'translateX(-90px)',opacity:0,filter:'blur(3px)'}],
+    {duration:380,delay:j*90+i*45,easing:'cubic-bezier(.55,0,.75,.2)',fill:'forwards'}).finished.catch(()=>{})));
+  // garantia: se a animação travar por qualquer motivo, troca mesmo assim em 1,2 s
+  Promise.race([Promise.all(saida),new Promise(r=>setTimeout(r,1200))]).then(()=>{
+    if(deslizando!==minha) return;
+    saindo=false;faixas.forEach(f=>pecas(f).forEach(el=>el.getAnimations().forEach(a=>a.cancel())));desenharEstado(ultimo||{});
+    faixas.forEach((f,j)=>pecas(f).forEach((el,i)=>{
+      el.getAnimations().forEach(a=>a.cancel());
+      el.animate([{transform:'translateX(120px)',opacity:0,filter:'blur(3px)'},{transform:'none',opacity:1,filter:'blur(0)'}],
+        {duration:720,delay:j*110+i*80,easing:'cubic-bezier(.16,1,.3,1)',fill:'backwards'});
+    }));
+  });
+}
+let relogio=null;
+function irPara(i){
+  ufAt=(i+ESTADOS.length)%ESTADOS.length;
+  document.querySelectorAll('.uf').forEach(b=>{b.classList.remove('on');void b.offsetWidth;}); // reinicia a barrinha
+  deslizar();
+  clearInterval(relogio);relogio=setInterval(()=>irPara(ufAt+1),TROCA);
+}
+$('ufs').style.setProperty('--troca',TROCA+'ms');
+$('ufs').innerHTML=ESTADOS.map(([uf,nome],i)=>`<button class="uf" type="button" title="${nome}" data-i="${i}">${uf.toUpperCase()}</button>`).join('');
+$('ufs').onclick=e=>{const b=e.target.closest('.uf');if(b)irPara(+b.dataset.i);};
 function estado(txt,tipo){const e=$('estado');e.hidden=!txt;e.textContent=txt||'';e.className='demo'+(tipo?' '+tipo:'');}
 
 /* ---------- busca a cada 10 s ---------- */
 let ultimo=null,buscando=false,falhas=0;
-try{const g=JSON.parse(ler('eleicoes-ultimo')||'null');if(g&&g.v===2&&g.pres!==undefined)ultimo=g;}catch(e){}
+try{const g=JSON.parse(ler('eleicoes-ultimo')||'null');if(g&&g.v===3&&g.pres!==undefined)ultimo=g;}catch(e){}
 try{localStorage.removeItem('apuracao-ultimo');}catch(e){} // anotação do app antigo (formato velho)
 async function atualizar(){
   if(buscando) return; buscando=true;
   try{
     const E1=ELEICAO[1],E2=ELEICAO[2];
-    const [pres2,gov2,pres1,gov,sen]=await Promise.all([
-      buscarArquivo(E2.pres,'br','0001'),buscarArquivo(E2.est,'pr','0003'),
-      buscarArquivo(E1.pres,'br','0001'),buscarArquivo(E1.est,'pr','0003'),buscarArquivo(E1.est,'pr','0005')]);
-    falhas=0;
+    const [pres2,pres1,...uf1]=await Promise.all([
+      buscarArquivo(E2.pres,'br','0001'),buscarArquivo(E1.pres,'br','0001'),
+      ...ESTADOS.flatMap(([uf])=>[buscarArquivo(E1.est,uf,'0003'),buscarArquivo(E1.est,uf,'0005')])]);
     const turno=pres2?2:1;
-    const novo={v:2,turno,pres:turno===2?pres2:pres1,gov,sen,gov2};
+    // 2º turno de Governador: só procura depois que o 2º turno começou
+    const uf2=turno===2?await Promise.all(ESTADOS.map(([uf])=>buscarArquivo(E2.est,uf,'0003').catch(()=>null))):[];
+    falhas=0;
+    const est={};ESTADOS.forEach(([uf],i)=>est[uf]={gov:uf1[2*i],sen:uf1[2*i+1],gov2:uf2[i]||null});
+    const novo={v:3,turno,pres:turno===2?pres2:pres1,est};
     // nunca volta pra trás: resposta mais atrasada que a da tela não substitui
-    if(ultimo&&ultimo.turno===novo.turno) for(const k of ['pres','gov','sen','gov2']) if(ultimo[k]&&(!novo[k]||novo[k].pst<ultimo[k].pst)) novo[k]=ultimo[k];
+    if(ultimo&&ultimo.turno===novo.turno){
+      if(ultimo.pres&&(!novo.pres||novo.pres.pst<ultimo.pres.pst)) novo.pres=ultimo.pres;
+      for(const [uf] of ESTADOS){const a=(ultimo.est||{})[uf]||{},b=novo.est[uf];
+        for(const k of ['gov','sen','gov2']) if(a[k]&&(!b[k]||b[k].pst<a[k].pst)) b[k]=a[k];}
+    }
     ultimo=novo; gravar('eleicoes-ultimo',JSON.stringify(novo));
     desenhar(novo);
     const p=novo.pres,pst=p?p.pst:0;
@@ -444,6 +504,7 @@ async function atualizar(){
 try{desenhar(ultimo||{});}catch(e){ultimo=null;try{desenhar({});}catch(e2){}}
 atualizar();
 setInterval(atualizar,INTERVALO);
+relogio=setInterval(()=>irPara(ufAt+1),TROCA);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){atualizar();acordar();}});
 addEventListener('online',atualizar);
 
