@@ -286,6 +286,19 @@ body.extra main>.pres,body.extra main>.faixa,body.extra main>.urnas{display:none
 .scard .barra{position:absolute;left:0;right:0;bottom:0;height:6px;background:var(--linha)}
 .scard .barra i{display:block;height:100%;transition:width .8s}
 @media (max-width:760px){.sgrade{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:none}}
+.selUF{font:700 14px var(--f);color:var(--texto);background:var(--btBg,var(--branco));border:1px solid var(--borda);border-radius:99px;padding:7px 12px;cursor:pointer;max-width:100%}
+@media (min-width:821px){
+  body:not(.extra) main>.pres{flex:1.45;display:flex;flex-direction:column;justify-content:center}
+  body:not(.extra) main>.faixa{flex:1;align-items:stretch}
+  body:not(.extra) .faixa .tres{align-items:stretch}
+  body:not(.extra) .duelo{flex:1;align-items:stretch}
+  :root{--fotoP:clamp(84px,21vh,200px);--fotoC:clamp(56px,13vh,120px)}
+  body:not(.extra) .lado .pc{font-size:clamp(48px,12.5vh,130px)}
+  body:not(.extra) .lado .nm{font-size:clamp(20px,3.6vh,38px)}
+  body:not(.extra) .card .pc{font-size:clamp(28px,7.5vh,76px)}
+  body:not(.extra) .card .nm{font-size:clamp(15px,2.5vh,23px)}
+  body:not(.extra) .card .vt{font-size:clamp(12px,1.9vh,17px)}
+}
 .depvazio{grid-row:1/-1;align-self:center;text-align:center;font-size:18px;color:var(--suave);padding:20px}
 .depconta{font-size:.6em;font-weight:800;color:var(--ok);background:var(--okBg);padding:3px 10px;border-radius:99px;vertical-align:middle}
 .comEleitos .dep.top{background:var(--lado)!important}
@@ -350,17 +363,12 @@ body.extra main>.pres,body.extra main>.faixa,body.extra main>.urnas{display:none
     </div>
     <div class="bd"><i id="dA"></i><i style="flex:1"></i><i id="dB"></i></div>
   </section>
-  <section class="cargo faixa" aria-label="Governador do Paraná">
+  <section class="cargo faixa" aria-label="Governador">
     <div class="cab"><span class="lugar" id="lugarG">Paraná</span><h2>Governador</h2>
-      <span class="ap"><b id="apG">0,00%</b> das seções <span class="ufTx">do PR</span></span>
+      <select id="fGovUF" class="selUF" aria-label="Estado do governador"></select>
+      <span class="ap"><b id="apG">0,00%</b> apurado</span>
       <span class="regra" id="regraG">Mais de 50% dos válidos vence no 1º turno.</span></div>
     <div class="tres" id="lG"></div>
-  </section>
-  <section class="cargo faixa" aria-label="Senado do Paraná">
-    <div class="cab"><span class="lugar" id="lugarS">Paraná</span><h2>Senador</h2>
-      <span class="ap"><b id="apS">0,00%</b> das seções <span class="ufTx">do PR</span></span>
-      <span class="regra">2 vagas: os 2 mais votados são eleitos.</span></div>
-    <div class="tres" id="lS"></div>
   </section>
   <section class="cargo urnas" aria-label="Urnas apuradas no Brasil">
     <div class="top"><span class="tit">Urnas apuradas no Brasil</span><span class="ja" id="apP">0,00%</span><span class="sec" id="secP"></span><span class="falta">Faltam <b id="faltaP">100,00%</b></span></div>
@@ -419,7 +427,7 @@ const chaveNome=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'')
 const NOME_POR_CODIGO={},NOME_POR_URNA={};Object.values(CAND).flat().forEach(c=>{NOME_POR_CODIGO[c[3]]=c[1];NOME_POR_URNA[chaveNome(c[1])]=c[1];});
 const COR={PT:'#D60828',PL:'#272D97',PSD:'#A0A00B',NOVO:'#4083A6',PDT:'#2569AD',REPUBLICANOS:'#3C678A',UP:'#454545','MISSÃO':'#D8942F',PCO:'#923D00',PSTU:'#B35454',MOBILIZA:'#C36969',PCB:'#E54B5A',DC:'#AB7C24',AVANTE:'#4C8790',DEMOCRATA:'#13617C',MDB:'#1F8A4C',PSB:'#E89B0C',PSOL:'#7B2D8E',PP:'#2E5DA8',PSDB:'#1C5BA8',REDE:'#2CA58D',CIDADANIA:'#D9487E',PODE:'#2DA44E',AGIR:'#1C6E8C',PV:'#3FA34D',SOLIDARIEDADE:'#F47C20',PRD:'#203D7B','UNIÃO':'#0F4C9C',PCdoB:'#C4122F',PRTB:'#2F8F3A'};
 // estados que vão passando nas faixas de Governador e Senado (troca a cada 1 min)
-const ESTADOS=[['pr','Paraná']]; // painel principal fixo no PR (outros estados: tela SENADORES e DEPUTADOS)
+const ESTADOS=[['pr','Paraná']]; // estado do Governador no painel (o Joel escolhe no filtro; começa no PR)
 const TROCA=60000;
 // tela extra dos deputados: entra a cada 5 min e fica 30 s (mais, se tiver várias páginas). Filtros: estado, federal/estadual, eleitos/mais votados
 const DEP_CADA=5*60000,DEP_DURA=30000,DEP_PAG=10000,DEP_POR_PAG=30;
@@ -483,6 +491,7 @@ function etiqueta(c){
   return '';
 }
 function cards(el,ord){
+  if(!ord.length){el.style.gridTemplateColumns='1fr';el.innerHTML='<div class="depvazio">Buscando os números no TSE…</div>';return;}
   const n=Math.max(1,Math.min(3,ord.length));el.style.gridTemplateColumns=`repeat(${n},minmax(0,1fr))`; // 2º turno: 2 cartões ocupando a faixa toda
   el.innerHTML=ord.slice(0,3).map((c,i)=>{
     const cor=COR[c.sg]||'#666';
@@ -554,12 +563,9 @@ function desenharEstado(D){
   const [uf,nomeUF]=ESTADOS[ufAt],E=(D&&D.est&&D.est[uf])||{},t2=D&&D.turno===2,pr=uf==='pr';
   const govT2=t2&&E.gov2;
   cards($('lG'),montar(govT2?E.gov2:E.gov,pr?CAND.gov:null));
-  apurado('apG',govT2?E.gov2:E.gov);apurado('apS',E.sen);
+  apurado('apG',govT2?E.gov2:E.gov);$('fGovUF').value=uf;
   $('lugarG').textContent=t2?(govT2?nomeUF+' · 2º turno':nomeUF+' · resultado do 1º turno'):nomeUF;
   $('regraG').textContent=govT2?'Quem tiver mais votos válidos vence.':'Mais de 50% dos válidos vence no 1º turno.';
-  cards($('lS'),montar(E.sen,pr?CAND.sen:null));
-  $('lugarS').textContent=t2?nomeUF+' · resultado do 1º turno':nomeUF;
-  document.querySelectorAll('.ufTx').forEach(e=>e.textContent=(uf==='pe'?'de ':'do ')+uf.toUpperCase());
   marcarChips();
 }
 // troca deslizando: o que está na tela sai pra esquerda, o novo entra pela direita, uma peça de cada vez
@@ -779,6 +785,13 @@ function desenharSenado(){
   $('senNota').textContent=`27 cadeiras eleitas em 2022 (pelo partido da eleição) + 54 em disputa hoje. `+(frente?'As mais apagadas são de quem está na frente no estado, mas o TSE ainda não confirmou.':'Todas as vagas de hoje já foram confirmadas pelo TSE.');
 }
 
+/* ---------- filtro do Governador (painel PRESIDENTE) ---------- */
+{const g=ler('apuracao-gov'),u=UFS.find(x=>x[0]===g);if(u)ESTADOS[0]=[u[0],u[1]];}
+$('fGovUF').innerHTML=UFS.map(([uf,nome])=>`<option value="${uf}">${nome}</option>`).join('');
+$('fGovUF').value=ESTADOS[0][0];
+$('fGovUF').onchange=e=>{const u=UFS.find(x=>x[0]===e.target.value);if(!u)return;ESTADOS[0]=[u[0],u[1]];gravar('apuracao-gov',u[0]);
+  deslizar();buscando=false;atualizar();};
+
 /* ---------- tela SENADORES: a disputa do Senado num estado escolhido (os 8 mais votados; as vagas do estado em destaque) ---------- */
 let snUF=ler('apuracao-sen')||'pr';
 $('fSnUF').innerHTML=UFS.map(([uf,nome])=>`<option value="${uf}">${nome}</option>`).join('');
@@ -816,7 +829,7 @@ function irPara(i){
   marcarChips();deslizar();ligarRelogios();
 }
 $('ufs').style.setProperty('--troca',TROCA+'ms');
-$('ufs').innerHTML=ESTADOS.map(([uf,nome],i)=>`<button class="uf" type="button" title="${nome}" data-i="${i}">${uf.toUpperCase()}</button>`).join('')
+$('ufs').innerHTML=`<button class="uf" type="button" title="Presidente e Governador" data-i="0">PRESIDENTE</button>`
   +`<button class="uf ufdep" type="button" title="Senadores: a disputa do Senado em qualquer estado" data-i="senadores" style="--troca:${PLEN_DURA}ms">SENADORES</button>`
   +`<button class="uf ufdep" type="button" title="Deputados: escolha o estado, federal ou estadual, eleitos ou mais votados" data-i="deps" style="--troca:${DEP_DURA}ms">DEPUTADOS</button>`
   +`<button class="uf ufdep" type="button" title="Câmara dos Deputados: as cadeiras dos eleitos, esquerda, centro e direita" data-i="camara" style="--troca:${PLEN_DURA}ms">CÂMARA</button>`

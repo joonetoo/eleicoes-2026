@@ -14,8 +14,8 @@ Projeto próprio desde 2026-10-04, separado do Ritmo (antes morava em `mei-finan
 - Base: `https://resultados.tse.jus.br/oficial/ele2026/`. O TSE libera CORS pro `joonetoo.github.io`.
 - 1º turno (04/10): eleição **6257** Presidente (`br-c0001`), **6259** Governador (`<uf>-c0003`), Senado (`<uf>-c0005`), Dep. federal (`c0006`), estadual (`c0007`, DF distrital `c0008`).
 - 2º turno (25/10): eleição **6258** Presidente, **6260** Governador PR. Só troca pro 2º turno quando o 1º chegou a 100% ou o 2º já tem voto.
-- Busca a cada 10 s. **Nada troca sozinho** (sem Pausar, sem Testar): botões no topo PR · SENADORES · DEPUTADOS · CÂMARA · SENADO.
-  - PR: painel fixo (Presidente Lula x Flávio, Governador PR top 3, Senado PR top 3, barra das urnas do Brasil).
+- Busca a cada 10 s. **Nada troca sozinho** (sem Pausar, sem Testar): botões no topo PRESIDENTE · SENADORES · DEPUTADOS · CÂMARA · SENADO.
+  - PRESIDENTE: Lula x Flávio + Governador (top 3) do estado escolhido no filtro (`apuracao-gov`, começa no PR) + barra das urnas do Brasil.
   - SENADORES: disputa do Senado do estado escolhido (8 mais votados; `apuracao-sen`).
   - DEPUTADOS: filtro estado / federal-estadual / eleitos-mais votados (`apuracao-dep`); vagas de `carg[0].nv`; páginas de 30 pelas setas.
   - CÂMARA (513, soma eleitos dos 27 estados) e SENADO (81 = 27 de 2022 fixas em `SEN2022`, de memória, + 54 de hoje). Esquerda vermelho, centro cinza (PSD, MDB, PSDB, Cidadania, Solidariedade, Avante), direita azul — listas `ESQ`/`CENTRO`. Passar o mouse (ou tocar) numa cadeira mostra nome, partido, UF, votos e situação.
