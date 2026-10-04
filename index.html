@@ -206,7 +206,7 @@ main{max-width:1480px;margin:0 auto;padding:10px 16px 8px;display:flex;flex-dire
 .bt em{display:none;font-style:normal}
 @media (max-width:760px){.acoes .bt span{display:none}.acoes .bt em{display:inline}}
 /* Mac com tela até ~1700px: nomes curtos nos botões pra barra de cima caber numa linha só */
-@media (min-width:761px) and (max-width:1700px){.acoes .bt span{display:none}.acoes .bt em{display:inline}.acoes .bt{padding:8px 12px}.topo .info{display:none}.uf{padding:6px 10px;font-size:12px}.uf.ufdep{padding-inline:11px}.topo{gap:10px}}
+@media (min-width:761px) and (max-width:1700px){.acoes .bt span{display:none}.acoes .bt em{display:inline}.acoes .bt{padding:8px 12px}.uf{padding:6px 10px;font-size:12px}.uf.ufdep{padding-inline:11px}.topo{gap:10px}}
 @media (prefers-reduced-motion:reduce){.vivo i{animation:none}}
 </style>
 <style>
@@ -226,7 +226,7 @@ main{max-width:1480px;margin:0 auto;padding:10px 16px 8px;display:flex;flex-dire
 @keyframes anda{from{width:0}to{width:100%}}
 @media (max-width:760px){.ufs{margin-top:12px}.uf{flex:1;padding:8px 0}}
 .uf.ufdep{padding-inline:14px}
-body.pausado .uf.on:after{display:none}
+.uf.on:after{display:none} /* nada troca sozinho: sem barrinha de tempo */
 /* tela dos deputados */
 body.extra main>.pres,body.extra main>.faixa,body.extra main>.urnas{display:none}
 .deps{padding:16px 18px 18px;display:flex;flex-direction:column;gap:12px}
@@ -264,6 +264,21 @@ body.extra main>.pres,body.extra main>.faixa,body.extra main>.urnas{display:none
 .maioria{font-size:14px;color:var(--suave);padding:0 4px}
 .maioria b{color:var(--texto)}
 @media (max-width:760px){.plencorpo{grid-template-columns:1fr}.plendesenho{height:auto}}
+.sgrade{flex:1;min-height:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:14px}
+.scard{position:relative;border-radius:22px;padding:16px 14px 18px;background:var(--lado,rgba(31,35,41,.035));display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:4px;overflow:hidden;min-height:0}
+.scard.frente{background:color-mix(in srgb,var(--c) 13%,transparent)!important;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--c) 45%,transparent)}
+.scard.el{background:color-mix(in srgb,var(--ok) 15%,transparent)!important;box-shadow:inset 0 0 0 2px var(--ok)}
+.scard img{width:clamp(64px,13vh,124px);height:clamp(64px,13vh,124px);border-radius:50%;object-fit:cover;object-position:50% 18%;border:3px solid var(--branco);box-shadow:0 0 0 3px var(--c);background:var(--linha);margin-bottom:6px}
+.scard .nm{font-weight:800;font-size:clamp(16px,2.5vh,23px);line-height:1.15;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.scard .ptd{justify-content:center;font-size:13px}
+.scard .pc{font-weight:800;font-size:clamp(30px,6vh,58px);line-height:1.05;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.scard .vt{font-size:clamp(12px,1.7vh,15px);color:var(--suave);font-variant-numeric:tabular-nums}
+.scard .pos{top:12px;left:16px;right:auto;font-size:16px}
+.scard .selo{position:absolute;top:12px;right:14px;font-size:11px;font-weight:800;letter-spacing:.05em;padding:3px 8px;border-radius:99px;background:color-mix(in srgb,var(--c) 22%,transparent);color:var(--texto)}
+.scard.el .selo{background:var(--okBg);color:var(--ok)}
+.scard .barra{position:absolute;left:0;right:0;bottom:0;height:6px;background:var(--linha)}
+.scard .barra i{display:block;height:100%;transition:width .8s}
+@media (max-width:760px){.sgrade{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:none}}
 .depvazio{grid-row:1/-1;align-self:center;text-align:center;font-size:18px;color:var(--suave);padding:20px}
 .depconta{font-size:.6em;font-weight:800;color:var(--ok);background:var(--okBg);padding:3px 10px;border-radius:99px;vertical-align:middle}
 .comEleitos .dep.top{background:var(--lado)!important}
@@ -314,10 +329,8 @@ body.extra main>.pres,body.extra main>.faixa,body.extra main>.urnas{display:none
   <div class="ufs" id="ufs"></div>
   <span class="demo" id="estado">Aguardando os primeiros números do TSE (previsto para as 17h).</span>
   <div class="acoes">
-    <button class="bt" id="pausa" type="button" title="Deixa a tela parada onde está (os números continuam atualizando)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 5v14M16 5v14"/></svg><span>Pausar telas</span><em>Pausar</em></button>
     <button class="bt" id="som" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg><span>Ligar som</span><em>Som</em></button>
     <button class="bt" id="tema" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z"/></svg><span>Automático</span><em>Tema</em></button>
-    <button class="bt" id="replay" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg><span>Testar a virada</span><em>Testar</em></button>
   </div>
 </header>
 
@@ -361,6 +374,12 @@ body.extra main>.pres,body.extra main>.faixa,body.extra main>.urnas{display:none
     <div class="plencab"><span class="lugar">Brasil · <span id="camVagas">513</span> cadeiras</span><h2>Câmara dos Deputados <b>eleitos</b></h2><span class="regra" id="camNota"></span></div>
     <div class="plencorpo"><div class="plendesenho" id="camDes"></div><div class="plenlado" id="camLeg"></div></div>
   </section>
+  <section class="cargo plen" id="senadores" aria-label="Senadores por estado" hidden>
+    <div class="plencab"><span class="lugar" id="snLugar">Paraná · 2 vagas</span><h2>Senado <b id="snUF">Paraná</b></h2><span class="ap"><b id="apSn">0,00%</b> apurado</span>
+      <div class="depfiltro"><select id="fSnUF" aria-label="Estado"></select></div>
+      <span class="regra" id="snNota"></span></div>
+    <div class="sgrade" id="snGrade"></div>
+  </section>
   <section class="cargo plen" id="senado" aria-label="Senado Federal" hidden>
     <div class="plencab"><span class="lugar">Brasil · 81 cadeiras</span><h2>Senado <b>Federal</b></h2><span class="regra" id="senNota"></span></div>
     <div class="plencorpo"><div class="plendesenho" id="senDes"></div><div class="plenlado" id="senLeg"></div></div>
@@ -393,7 +412,7 @@ const chaveNome=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'')
 const NOME_POR_CODIGO={},NOME_POR_URNA={};Object.values(CAND).flat().forEach(c=>{NOME_POR_CODIGO[c[3]]=c[1];NOME_POR_URNA[chaveNome(c[1])]=c[1];});
 const COR={PT:'#D60828',PL:'#272D97',PSD:'#A0A00B',NOVO:'#4083A6',PDT:'#2569AD',REPUBLICANOS:'#3C678A',UP:'#454545','MISSÃO':'#D8942F',PCO:'#923D00',PSTU:'#B35454',MOBILIZA:'#C36969',PCB:'#E54B5A',DC:'#AB7C24',AVANTE:'#4C8790',DEMOCRATA:'#13617C',MDB:'#1F8A4C',PSB:'#E89B0C',PSOL:'#7B2D8E',PP:'#2E5DA8',PSDB:'#1C5BA8',REDE:'#2CA58D',CIDADANIA:'#D9487E',PODE:'#2DA44E',AGIR:'#1C6E8C',PV:'#3FA34D',SOLIDARIEDADE:'#F47C20',PRD:'#203D7B','UNIÃO':'#0F4C9C',PCdoB:'#C4122F',PRTB:'#2F8F3A'};
 // estados que vão passando nas faixas de Governador e Senado (troca a cada 1 min)
-const ESTADOS=[['pr','Paraná'],['sp','São Paulo'],['rs','Rio Grande do Sul'],['pe','Pernambuco'],['mg','Minas Gerais']];
+const ESTADOS=[['pr','Paraná']]; // painel principal fixo no PR (outros estados: tela SENADORES e DEPUTADOS)
 const TROCA=60000;
 // tela extra dos deputados: entra a cada 5 min e fica 30 s (mais, se tiver várias páginas). Filtros: estado, federal/estadual, eleitos/mais votados
 const DEP_CADA=5*60000,DEP_DURA=30000,DEP_PAG=10000,DEP_POR_PAG=30;
@@ -457,6 +476,7 @@ function etiqueta(c){
   return '';
 }
 function cards(el,ord){
+  const n=Math.max(1,Math.min(3,ord.length));el.style.gridTemplateColumns=`repeat(${n},minmax(0,1fr))`; // 2º turno: 2 cartões ocupando a faixa toda
   el.innerHTML=ord.slice(0,3).map((c,i)=>{
     const cor=COR[c.sg]||'#666';
     return `<div class="card${i===0&&c.v>0?' frente':''}" style="--c:${cor}">
@@ -621,14 +641,14 @@ $('fVer').onclick=e=>{const b=e.target.closest('button');if(b&&b.dataset.v!==dep
 $('pagAnt').onclick=()=>{trocarPagina(-1);ligarRelogios();};
 $('pagProx').onclick=()=>{trocarPagina(1);ligarRelogios();};
 const pecasPlen=id=>()=>[...$(id).children];
-const PECAS={painel:pecasPainel,deps:pecasDeps,camara:pecasPlen('camara'),senado:pecasPlen('senado')};
+const PECAS={painel:pecasPainel,deps:pecasDeps,camara:pecasPlen('camara'),senado:pecasPlen('senado'),senadores:()=>[$('senadores').querySelector('.plencab'),...$('senadores').querySelectorAll('.scard,.depvazio')]};
 function trocarTela(nova){
   if(nova===tela) return;
   const velha=tela;tela=nova;marcarChips();
   slide(PECAS[velha](),()=>{
     document.body.classList.toggle('extra',nova!=='painel');
-    for(const id of ['deps','camara','senado']) $(id).hidden=id!==nova;
-    if(nova==='deps') desenharDeps(); else if(nova==='camara') desenharCamara(); else if(nova==='senado') desenharSenado(); else desenharEstado(ultimo||{});
+    for(const id of ['deps','camara','senado','senadores']) $(id).hidden=id!==nova;
+    if(nova==='deps') desenharDeps(); else if(nova==='camara') desenharCamara(); else if(nova==='senado') desenharSenado(); else if(nova==='senadores') desenharSenadores(); else desenharEstado(ultimo||{});
   },PECAS[nova],nova==='deps'?35:nova==='painel'?110:70);
 }
 function mostrarDeps(){
@@ -636,7 +656,7 @@ function mostrarDeps(){
   trocarTela('deps');marcarChips();ligarRelogios();
 }
 function mostrarPlen(qual){
-  (qual==='camara'?buscarCamara:buscarSenado)(true).catch(()=>{});
+  ({camara:buscarCamara,senado:buscarSenado,senadores:buscarSenado}[qual])(true).catch(()=>{});
   trocarTela(qual);marcarChips();ligarRelogios();
 }
 
@@ -713,10 +733,11 @@ function desenharCamara(){
 // Senado: 27 cadeiras de 2022 + as 54 de hoje (2 por estado). Sem confirmação do TSE, mostra quem está na frente, mais clarinho.
 let senado={},senadoEm=0;
 async function buscarSenado(forcar){
-  if(!forcar&&Date.now()-senadoEm<20000) return; senadoEm=Date.now();
+  if(!forcar&&Date.now()-senadoEm<10000) return; senadoEm=Date.now();
   const rs=await Promise.all(UFS.map(([uf])=>buscarArquivo(ELEICAO[1].est,uf,'0005').catch(()=>null)));
   UFS.forEach(([uf],i)=>{const n=rs[i],a=senado[uf];if(n&&(!a||n.pst>=a.pst))senado[uf]=n;});
   if(tela==='senado'&&!saindo) desenharSenado();
+  if(tela==='senadores'&&!saindo) desenharSenadores();
 }
 function desenharSenado(){
   const cad=SEN2022.map(([uf,nm,sg])=>({b:bloco(sg),sg}));let conf=0,frente=0;
@@ -731,24 +752,33 @@ function desenharSenado(){
   $('senNota').textContent=`27 cadeiras eleitas em 2022 (pelo partido da eleição) + 54 em disputa hoje. `+(frente?'As mais apagadas são de quem está na frente no estado, mas o TSE ainda não confirmou.':'Todas as vagas de hoje já foram confirmadas pelo TSE.');
 }
 
-/* ---------- relógios das telas (param quando o botão Pausar está ligado; os números continuam chegando) ---------- */
-let relogio=null,pausado=ler('apuracao-pausa')==='1';
-function ligarRelogios(){
-  clearInterval(relogio);clearInterval(depRelogio);clearInterval(pagRelogio);clearTimeout(volta);
-  document.body.classList.toggle('pausado',pausado);
-  if(pausado) return;
-  relogio=setInterval(()=>irPara(ufAt+1),TROCA);
-  depRelogio=setInterval(mostrarDeps,DEP_CADA);
-  if(tela==='deps'){
-    pagRelogio=setInterval(()=>trocarPagina(1),DEP_PAG); // muitas cadeiras (SP tem 70): passa de 30 em 30
-    volta=setTimeout(()=>{trocarTela('painel');ligarRelogios();},Math.max(DEP_DURA,paginas()*DEP_PAG));
-  }else if(tela!=='painel') volta=setTimeout(()=>{trocarTela('painel');ligarRelogios();},PLEN_DURA); // Câmara/Senado: 1 min e volta
-
+/* ---------- tela SENADORES: a disputa do Senado num estado escolhido (os 8 mais votados; as vagas do estado em destaque) ---------- */
+let snUF=ler('apuracao-sen')||'pr';
+$('fSnUF').innerHTML=UFS.map(([uf,nome])=>`<option value="${uf}">${nome}</option>`).join('');
+$('fSnUF').onchange=e=>{snUF=e.target.value;gravar('apuracao-sen',snUF);
+  const pecas=()=>[...$('senadores').querySelectorAll('.scard,.depvazio')];
+  slide(pecas(),desenharSenadores,pecas,60);buscarSenado(true).catch(()=>{});ligarRelogios();};
+function desenharSenadores(){
+  const [uf,nome]=UFS.find(u=>u[0]===snUF)||['pr','Paraná'],r=senado[uf],vagas=(r&&r.nv)||2;
+  const todos=montar(r,uf==='pr'?CAND.sen:null),temEl=todos.some(eleito);
+  $('fSnUF').value=uf;$('snUF').textContent=nome;$('snLugar').textContent=`${nome} · ${vagas} vagas`;apurado('apSn',r);
+  $('snNota').textContent=temEl?'Em verde, quem o TSE já confirmou como eleito.':`As ${vagas} vagas ficam com os ${vagas} mais votados. Em destaque, quem está ocupando as vagas agora (o TSE ainda não confirmou).`;
+  $('snGrade').innerHTML=todos.slice(0,8).map((c,i)=>{
+    const cor=COR[c.sg]||'#666',el=eleito(c),frente=!temEl&&i<vagas&&c.v>0;
+    return `<div class="scard${el?' el':frente?' frente':''}" style="--c:${cor}">
+      ${c.v>0?`<span class="pos">${i+1}º</span>`:''}${el?'<span class="selo">ELEITO</span>':frente?'<span class="selo">NA VAGA</span>':''}
+      <img src="${foto(c)}" alt="Foto oficial de ${c.nm}">
+      <div class="nm">${c.nm}</div>
+      <div class="ptd"><span class="sg" style="background:${cor}">${c.sg}</span><span class="num">${c.n}</span></div>
+      <div class="pc" style="color:${COR_TEXTO[c.sg]||'var(--texto)'}">${nf(c.pc)}%</div>
+      <div class="vt">${ni(c.v)} votos</div>
+      <span class="barra"><i style="width:${Math.min(c.pc,100)}%;background:${cor}"></i></span></div>`;
+  }).join('')||`<div class="depvazio">${r?'Nenhum candidato neste arquivo ainda.':'Buscando os números no TSE…'}</div>`;
 }
-function botaoPausa(){const b=$('pausa');b.classList.toggle('on',pausado);b.querySelector('span').textContent=pausado?'Telas pausadas':'Pausar telas';b.querySelector('em').textContent=pausado?'Pausado':'Pausar';
-  b.querySelector('svg').innerHTML=pausado?'<path d="M7 4.5v15l12-7.5z"/>':'<path d="M8 5v14M16 5v14"/>';}
-$('pausa').onclick=()=>{pausado=!pausado;gravar('apuracao-pausa',pausado?'1':'0');botaoPausa();marcarChips();ligarRelogios();};
-botaoPausa();
+
+/* ---------- sem troca automática: cada tela fica até o Joel clicar em outro botão ---------- */
+let relogio=null;
+function ligarRelogios(){clearInterval(relogio);clearInterval(depRelogio);clearInterval(pagRelogio);clearTimeout(volta);}
 function marcarChips(){
   document.querySelectorAll('.uf').forEach(b=>{b.classList.remove('on');void b.offsetWidth;}); // reinicia a barrinha
   document.querySelectorAll('.uf').forEach(b=>b.classList.toggle('on',tela!=='painel'?b.dataset.i===tela:b.dataset.i===String(ufAt)));
@@ -760,10 +790,11 @@ function irPara(i){
 }
 $('ufs').style.setProperty('--troca',TROCA+'ms');
 $('ufs').innerHTML=ESTADOS.map(([uf,nome],i)=>`<button class="uf" type="button" title="${nome}" data-i="${i}">${uf.toUpperCase()}</button>`).join('')
+  +`<button class="uf ufdep" type="button" title="Senadores: a disputa do Senado em qualquer estado" data-i="senadores" style="--troca:${PLEN_DURA}ms">SENADORES</button>`
   +`<button class="uf ufdep" type="button" title="Deputados: escolha o estado, federal ou estadual, eleitos ou mais votados" data-i="deps" style="--troca:${DEP_DURA}ms">DEPUTADOS</button>`
   +`<button class="uf ufdep" type="button" title="Câmara dos Deputados: as cadeiras dos eleitos, esquerda, centro e direita" data-i="camara" style="--troca:${PLEN_DURA}ms">CÂMARA</button>`
   +`<button class="uf ufdep" type="button" title="Senado: as 81 cadeiras, esquerda, centro e direita" data-i="senado" style="--troca:${PLEN_DURA}ms">SENADO</button>`;
-$('ufs').onclick=e=>{const b=e.target.closest('.uf');if(!b)return;const i=b.dataset.i;if(i==='deps')mostrarDeps();else if(i==='camara'||i==='senado')mostrarPlen(i);else irPara(+i);};
+$('ufs').onclick=e=>{const b=e.target.closest('.uf');if(!b)return;const i=b.dataset.i;if(i==='deps')mostrarDeps();else if(i==='camara'||i==='senado'||i==='senadores')mostrarPlen(i);else irPara(+i);};
 function estado(txt,tipo){const e=$('estado');e.hidden=!txt;e.textContent=txt||'';e.className='demo'+(tipo?' '+tipo:'');}
 
 /* ---------- busca a cada 10 s ---------- */
@@ -777,7 +808,8 @@ async function atualizar(){
     const [pres2,pres1,...uf1]=await Promise.all([
       buscarArquivo(E2.pres,'br','0001'),buscarArquivo(E1.pres,'br','0001'),
       ...ESTADOS.flatMap(([uf])=>[buscarArquivo(E1.est,uf,'0003'),buscarArquivo(E1.est,uf,'0005')])]);
-    const turno=pres2?2:1;
+    // 2º turno só entra quando o 1º acabou (100%) ou quando o 2º já tem voto — evita trocar antes da hora se o TSE publicar o arquivo vazio cedo
+    const turno=pres2&&(pres2.pst>0||pres2.vv>0||(pres1&&pres1.pst>=100))?2:1;
     // 2º turno de Governador: só procura depois que o 2º turno começou
     const uf2=turno===2?await Promise.all(ESTADOS.map(([uf])=>buscarArquivo(E2.est,uf,'0003').catch(()=>null))):[];
     falhas=0;
@@ -793,7 +825,7 @@ async function atualizar(){
     desenhar(novo);
     if(tela==='deps') buscarDeps().catch(()=>{});
     if(tela==='camara') buscarCamara().catch(()=>{});
-    if(tela==='senado') buscarSenado().catch(()=>{});
+    if(tela==='senado'||tela==='senadores') buscarSenado().catch(()=>{});
     const p=novo.pres,pst=p?p.pst:0;
     if(!p||(!pst&&!p.vv)) estado(turno===2?'2º turno: aguardando os primeiros números do TSE (a partir das 17h do dia da votação). A tela atualiza sozinha.':'Aguardando os primeiros números do TSE (previsto para as 17h). A tela atualiza sozinha.');
     else if(pst>=100) estado(`Apuração de Presidente do ${turno}º turno encerrada: 100% das seções.`,'ok');
@@ -850,7 +882,6 @@ function loop(){cx.clearRect(0,0,cv.width,cv.height);pecas=pecas.filter(p=>p.vid
   for(const p of pecas){p.vy+=.3*devicePixelRatio;p.vx*=.985;p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;p.vida-=.005;
     cx.save();cx.globalAlpha=Math.min(1,p.vida*2);cx.fillStyle=p.c;cx.translate(p.x,p.y);cx.rotate(p.r);cx.fillRect(-p.w/2,-p.h/2,p.w,p.h*Math.abs(Math.cos(p.r*2))+1);cx.restore();}
   anim=pecas.length?requestAnimationFrame(loop):(cx.clearRect(0,0,cv.width,cv.height),null);}
-$('replay').onclick=()=>{const P=montar(ultimo&&ultimo.pres,CAND.pres),L=P.find(c=>c.n===13)||P[0],O=P.find(c=>c!==L&&(c.n===22||P.length===2))||P[1];festa(L.v-O.v,O.nm,true);};
 
 /* ---------- tema: Automático -> Claro -> Escuro ---------- */
 const TEMAS=['auto','light','dark'],NOMES={auto:'Automático',light:'Claro',dark:'Escuro'};let tema=ler('apuracao-tema')||'auto';

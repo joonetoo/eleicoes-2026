@@ -12,13 +12,14 @@ Projeto próprio desde 2026-10-04, separado do Ritmo (antes morava em `mei-finan
 
 ## Fonte dos números (TSE)
 - Base: `https://resultados.tse.jus.br/oficial/ele2026/`. O TSE libera CORS pro `joonetoo.github.io`.
-- 1º turno (04/10): eleição **6257** Presidente (`br-c0001`), **6259** Governador (`<uf>-c0003`) e Senado (`<uf>-c0005`) de PR, SP, RS, PE e MG.
-- Busca a cada 10 s. Presidente fica fixo em cima; Governador e Senado (3 mais votados) trocam de estado a cada 1 min, deslizando.
-- A cada 5 min entra por 30 s a tela dos deputados, com filtros: estado (27 UFs), federal `c0006` / estadual `c0007` (DF: distrital `c0008`), eleitos / mais votados. Vagas vêm do arquivo (`carg[0].nv`); mais de 30 vagas passa páginas a cada 10 s. Escolha guardada em `apuracao-dep`. Botões no topo trocam na mão; botão Pausar deixa a tela parada (`apuracao-pausa`).
-- Telas CÂMARA (513 cadeiras, soma os eleitos de `<uf>-c0006` dos 27 estados) e SENADO (81 = 27 de 2022 fixas no código `SEN2022`, de memória, + 54 de hoje `c0005`; sem confirmação mostra quem está na frente, apagado). Só pelos botões, ficam 1 min. Cores: esquerda vermelho, centro cinza (PSD, MDB, PSDB, Cidadania, Solidariedade, Avante), direita azul — listas `ESQ`/`CENTRO`.
-- 2º turno (25/10): eleição **6258** Presidente, **6260** Governador PR (só se o PR tiver 2º turno).
-- Lê os dois formatos: `dados/<uf>/<uf>-cXXXX-eXXXXXX-u.json` (completo) e `dados-simplificados/…-r.json`; fica com o mais adiantado.
-- Troca sozinho pro 2º turno quando o arquivo de Presidente da 6258 aparece. Senado (e Governador, se não houver 2º turno no PR) mostram o resultado final do 1º.
+- 1º turno (04/10): eleição **6257** Presidente (`br-c0001`), **6259** Governador (`<uf>-c0003`), Senado (`<uf>-c0005`), Dep. federal (`c0006`), estadual (`c0007`, DF distrital `c0008`).
+- 2º turno (25/10): eleição **6258** Presidente, **6260** Governador PR. Só troca pro 2º turno quando o 1º chegou a 100% ou o 2º já tem voto.
+- Busca a cada 10 s. **Nada troca sozinho** (sem Pausar, sem Testar): botões no topo PR · SENADORES · DEPUTADOS · CÂMARA · SENADO.
+  - PR: painel fixo (Presidente Lula x Flávio, Governador PR top 3, Senado PR top 3, barra das urnas do Brasil).
+  - SENADORES: disputa do Senado do estado escolhido (8 mais votados; `apuracao-sen`).
+  - DEPUTADOS: filtro estado / federal-estadual / eleitos-mais votados (`apuracao-dep`); vagas de `carg[0].nv`; páginas de 30 pelas setas.
+  - CÂMARA (513, soma eleitos dos 27 estados) e SENADO (81 = 27 de 2022 fixas em `SEN2022`, de memória, + 54 de hoje). Esquerda vermelho, centro cinza (PSD, MDB, PSDB, Cidadania, Solidariedade, Avante), direita azul — listas `ESQ`/`CENTRO`.
+- Lê os dois formatos: `dados/<uf>/…-u.json` (completo) e `dados-simplificados/…-r.json`; fica com o mais adiantado.
 - Fotos oficiais: `…/<eleição>/fotos/<uf>/<sqcand>.jpeg` (cópias locais em `fotos/`; candidato novo cai na foto do TSE).
 
 ## Visual
