@@ -292,11 +292,14 @@ body.extra main>.pres,body.extra main>.faixa,body.extra main>.urnas{display:none
   body:not(.extra) main>.faixa{flex:1;align-items:stretch}
   body:not(.extra) .faixa .tres{align-items:stretch}
   body:not(.extra) .duelo{flex:1;align-items:stretch}
-  :root{--fotoP:clamp(84px,21vh,200px);--fotoC:clamp(56px,13vh,120px)}
-  body:not(.extra) .lado .pc{font-size:clamp(48px,12.5vh,130px)}
-  body:not(.extra) .lado .nm{font-size:clamp(20px,3.6vh,38px)}
-  body:not(.extra) .card .pc{font-size:clamp(28px,7.5vh,76px)}
-  body:not(.extra) .card .nm{font-size:clamp(15px,2.5vh,23px)}
+  /* tamanho acompanha a altura da tela E a largura de cada cartão (cqw), pra porcentagem nunca cortar */
+  body:not(.extra) .lado,body:not(.extra) .card{container-type:inline-size;align-content:center}
+  body:not(.extra) .lado img{width:clamp(84px,min(21vh,26cqw),200px);height:clamp(84px,min(21vh,26cqw),200px)}
+  body:not(.extra) .lado .pc{font-size:clamp(36px,min(12.5vh,calc((100cqw - min(21vh,26cqw,200px) - 110px) / 4)),130px)}
+  body:not(.extra) .lado .nm{font-size:clamp(18px,min(3.6vh,calc((100cqw - min(21vh,26cqw,200px) - 110px) / 10)),38px)}
+  body:not(.extra) .card img{width:clamp(48px,min(13vh,24cqw),120px);height:clamp(48px,min(13vh,24cqw),120px)}
+  body:not(.extra) .card .pc{font-size:clamp(22px,min(7.5vh,calc((100cqw - min(13vh,24cqw,120px) - 70px) / 4)),76px)}
+  body:not(.extra) .card .nm{font-size:clamp(14px,min(2.5vh,calc((100cqw - min(13vh,24cqw,120px) - 100px) / 9)),23px)}
   body:not(.extra) .card .vt{font-size:clamp(12px,1.9vh,17px)}
 }
 .depvazio{grid-row:1/-1;align-self:center;text-align:center;font-size:18px;color:var(--suave);padding:20px}
