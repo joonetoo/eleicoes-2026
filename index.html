@@ -285,7 +285,7 @@ const chaveNome=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'')
 const NOME_POR_CODIGO={},NOME_POR_URNA={};Object.values(CAND).flat().forEach(c=>{NOME_POR_CODIGO[c[3]]=c[1];NOME_POR_URNA[chaveNome(c[1])]=c[1];});
 const COR={PT:'#D60828',PL:'#272D97',PSD:'#A0A00B',NOVO:'#4083A6',PDT:'#2569AD',REPUBLICANOS:'#3C678A',UP:'#454545','MISSÃO':'#D8942F',PCO:'#923D00',PSTU:'#B35454',MOBILIZA:'#C36969',PCB:'#E54B5A',DC:'#AB7C24',AVANTE:'#4C8790',DEMOCRATA:'#13617C'};
 const COR_TEXTO={PT:'var(--ptTx)',PL:'var(--plTx)'};
-const INTERVALO=30000;
+const INTERVALO=10000;
 
 const $=id=>document.getElementById(id);
 const nf=(n,d=2)=>n.toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
@@ -414,7 +414,7 @@ function desenhar(D){
 }
 function estado(txt,tipo){const e=$('estado');e.hidden=!txt;e.textContent=txt||'';e.className='demo'+(tipo?' '+tipo:'');}
 
-/* ---------- busca a cada 30 s ---------- */
+/* ---------- busca a cada 10 s ---------- */
 let ultimo=null,buscando=false,falhas=0;
 try{const g=JSON.parse(ler('eleicoes-ultimo')||'null');if(g&&g.v===2&&g.pres!==undefined)ultimo=g;}catch(e){}
 try{localStorage.removeItem('apuracao-ultimo');}catch(e){} // anotação do app antigo (formato velho)
@@ -438,7 +438,7 @@ async function atualizar(){
     else estado('');
   }catch(e){
     falhas++;
-    estado(falhas>1?'Sem conexão com o TSE agora. Os números na tela são os últimos que chegaram; tentando de novo a cada 30 segundos.':'','erro');
+    estado(falhas>1?'Sem conexão com o TSE agora. Os números na tela são os últimos que chegaram; tentando de novo a cada 10 segundos.':'','erro');
   }finally{buscando=false;}
 }
 try{desenhar(ultimo||{});}catch(e){ultimo=null;try{desenhar({});}catch(e2){}}
