@@ -206,7 +206,7 @@ main{max-width:1480px;margin:0 auto;padding:10px 16px 8px;display:flex;flex-dire
 .bt em{display:none;font-style:normal}
 @media (max-width:760px){.acoes .bt span{display:none}.acoes .bt em{display:inline}}
 /* Mac com tela até ~1700px: nomes curtos nos botões pra barra de cima caber numa linha só */
-@media (min-width:761px) and (max-width:1700px){.acoes .bt span{display:none}.acoes .bt em{display:inline}.acoes .bt{padding:8px 13px}}
+@media (min-width:761px) and (max-width:1700px){.acoes .bt span{display:none}.acoes .bt em{display:inline}.acoes .bt{padding:8px 12px}.topo .info{display:none}.uf{padding:6px 10px;font-size:12px}.uf.ufdep{padding-inline:11px}.topo{gap:10px}}
 @media (prefers-reduced-motion:reduce){.vivo i{animation:none}}
 </style>
 <style>
@@ -228,7 +228,7 @@ main{max-width:1480px;margin:0 auto;padding:10px 16px 8px;display:flex;flex-dire
 .uf.ufdep{padding-inline:14px}
 body.pausado .uf.on:after{display:none}
 /* tela dos deputados */
-body.modoDep main>.pres,body.modoDep main>.faixa,body.modoDep main>.urnas{display:none}
+body.extra main>.pres,body.extra main>.faixa,body.extra main>.urnas{display:none}
 .deps{padding:16px 18px 18px;display:flex;flex-direction:column;gap:12px}
 .depcab{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;padding:0 6px}
 .depcab h2{font-size:30px}
@@ -241,6 +241,29 @@ body.modoDep main>.pres,body.modoDep main>.faixa,body.modoDep main>.urnas{displa
 .seg button.on{background:var(--texto);color:var(--fundo)}
 .pags{display:inline-flex;align-items:center;gap:2px;font-size:13px;font-weight:700;color:var(--suave);font-variant-numeric:tabular-nums}
 .pags button{font-size:18px;line-height:1;padding:4px 10px;color:var(--texto)}
+.plen{padding:16px 22px 18px;display:flex;flex-direction:column;gap:10px}
+.plencab{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;padding:0 4px}
+.plencab h2{font-size:30px}
+.plencab h2 b{font-weight:800}
+.plencab .lugar{font-size:15px;color:var(--texto)}
+.plencab .regra{flex-basis:100%;margin-top:-4px;font-size:13px}
+.plencorpo{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1.55fr) minmax(300px,1fr);gap:26px;align-items:center}
+.plendesenho{min-height:0;height:100%;display:flex;align-items:center;justify-content:center}
+.plendesenho svg{width:100%;height:100%;max-height:100%;overflow:visible}
+.plendesenho .tot{font:800 .19px var(--f);fill:var(--texto)}
+.plendesenho .sub{font:600 .05px var(--f);fill:var(--suave)}
+.plendesenho .mai{stroke:var(--texto);stroke-width:.006;stroke-dasharray:.02 .015;opacity:.6}
+.plenlado{display:flex;flex-direction:column;gap:12px}
+.bloco{border-radius:18px;padding:12px 16px;background:var(--lado,rgba(31,35,41,.035));box-shadow:inset 6px 0 0 var(--c)}
+.bloco .bt1{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.bloco .bn{font-size:17px;font-weight:800}
+.bloco .bq{font-size:clamp(30px,5.4vh,50px);font-weight:800;color:var(--c);font-variant-numeric:tabular-nums;line-height:1}
+.bloco .bp{display:flex;flex-wrap:wrap;gap:5px 10px;margin-top:6px;font-size:13px;color:var(--suave);font-variant-numeric:tabular-nums}
+.bloco .bp b{color:var(--texto)}
+.bloco.pend .bq{color:var(--suave)}
+.maioria{font-size:14px;color:var(--suave);padding:0 4px}
+.maioria b{color:var(--texto)}
+@media (max-width:760px){.plencorpo{grid-template-columns:1fr}.plendesenho{height:auto}}
 .depvazio{grid-row:1/-1;align-self:center;text-align:center;font-size:18px;color:var(--suave);padding:20px}
 .depconta{font-size:.6em;font-weight:800;color:var(--ok);background:var(--okBg);padding:3px 10px;border-radius:99px;vertical-align:middle}
 .comEleitos .dep.top{background:var(--lado)!important}
@@ -266,7 +289,8 @@ body.modoDep main>.pres,body.modoDep main>.faixa,body.modoDep main>.urnas{displa
 @media (min-width:821px){
   body{display:flex;flex-direction:column}
   main{flex:1;width:100%}
-  body.modoDep{height:100vh;min-height:640px}
+  body.extra{height:100vh;min-height:640px}
+  .plen{flex:1;min-height:0}
   .deps{flex:1;min-height:0}
   .dep{background:var(--lado)}
 }
@@ -332,6 +356,14 @@ body.modoDep main>.pres,body.modoDep main>.faixa,body.modoDep main>.urnas{displa
       </div>
       <span class="regra depnota" id="depNota"></span></div>
     <div class="depcols" id="depcols"></div>
+  </section>
+  <section class="cargo plen" id="camara" aria-label="Câmara dos Deputados" hidden>
+    <div class="plencab"><span class="lugar">Brasil · <span id="camVagas">513</span> cadeiras</span><h2>Câmara dos Deputados <b>eleitos</b></h2><span class="regra" id="camNota"></span></div>
+    <div class="plencorpo"><div class="plendesenho" id="camDes"></div><div class="plenlado" id="camLeg"></div></div>
+  </section>
+  <section class="cargo plen" id="senado" aria-label="Senado Federal" hidden>
+    <div class="plencab"><span class="lugar">Brasil · 81 cadeiras</span><h2>Senado <b>Federal</b></h2><span class="regra" id="senNota"></span></div>
+    <div class="plencorpo"><div class="plendesenho" id="senDes"></div><div class="plenlado" id="senLeg"></div></div>
   </section>
 </main>
 
@@ -529,7 +561,7 @@ const pecasDeps=()=>[$('deps').querySelector('.depcab'),...$('deps').querySelect
 function deslizar(){slide(pecasEstado(),()=>desenharEstado(ultimo||{}),pecasEstado);}
 
 /* ---------- tela dos deputados (filtro: estado, federal/estadual, eleitos/mais votados) ---------- */
-let deps={},modoDep=false,volta=null,depRelogio=null,pagRelogio=null,depPag=0;
+let deps={},tela='painel',volta=null,depRelogio=null,pagRelogio=null,depPag=0;
 let depSel={uf:'pr',cargo:'f',ver:'eleitos'};
 try{Object.assign(depSel,JSON.parse(ler('apuracao-dep')||'{}'));}catch(e){}
 $('depcols').innerHTML=[0,1,2].map(k=>`<div class="depcol"><ol class="deplist" id="dcol${k}"></ol></div>`).join('');
@@ -540,7 +572,7 @@ async function buscarDeps(){
   const k=chaveDep(),[uf]=k.split('-');
   const n=await buscarArquivo(ELEICAO[1].est,uf,codCargo()).catch(()=>null);
   if(n&&(!deps[k]||n.pst>=deps[k].pst)) deps[k]=n;
-  if(modoDep&&!saindo&&k===chaveDep()) desenharDeps();
+  if(tela==='deps'&&!saindo&&k===chaveDep()) desenharDeps();
 }
 // lista do jeito escolhido: "Eleitos" (enquanto o TSE não marca, mostra os mais votados) ou "Mais votados" (pela ordem dos votos, eleitos em verde)
 function listaDeps(){
@@ -588,17 +620,115 @@ $('fCargo').onclick=e=>{const b=e.target.closest('button');if(b&&b.dataset.v!==d
 $('fVer').onclick=e=>{const b=e.target.closest('button');if(b&&b.dataset.v!==depSel.ver)mudarFiltro({ver:b.dataset.v});};
 $('pagAnt').onclick=()=>{trocarPagina(-1);ligarRelogios();};
 $('pagProx').onclick=()=>{trocarPagina(1);ligarRelogios();};
-function trocarTela(paraDep){
-  if(paraDep===modoDep) return;
-  modoDep=paraDep;marcarChips();
-  slide(paraDep?pecasPainel():pecasDeps(),()=>{
-    document.body.classList.toggle('modoDep',paraDep);$('deps').hidden=!paraDep;
-    if(paraDep) desenharDeps(); else desenharEstado(ultimo||{});
-  },paraDep?pecasDeps:pecasPainel,paraDep?35:110);
+const pecasPlen=id=>()=>[...$(id).children];
+const PECAS={painel:pecasPainel,deps:pecasDeps,camara:pecasPlen('camara'),senado:pecasPlen('senado')};
+function trocarTela(nova){
+  if(nova===tela) return;
+  const velha=tela;tela=nova;marcarChips();
+  slide(PECAS[velha](),()=>{
+    document.body.classList.toggle('extra',nova!=='painel');
+    for(const id of ['deps','camara','senado']) $(id).hidden=id!==nova;
+    if(nova==='deps') desenharDeps(); else if(nova==='camara') desenharCamara(); else if(nova==='senado') desenharSenado(); else desenharEstado(ultimo||{});
+  },PECAS[nova],nova==='deps'?35:nova==='painel'?110:70);
 }
 function mostrarDeps(){
   depPag=0;buscarDeps().catch(()=>{});
-  trocarTela(true);marcarChips();ligarRelogios();
+  trocarTela('deps');marcarChips();ligarRelogios();
+}
+function mostrarPlen(qual){
+  (qual==='camara'?buscarCamara:buscarSenado)(true).catch(()=>{});
+  trocarTela(qual);marcarChips();ligarRelogios();
+}
+
+/* ---------- Câmara e Senado: desenho das cadeiras (esquerda vermelho, centro cinza, direita azul) ---------- */
+const PLEN_DURA=60000;
+const ESQ=new Set(['PT','PSOL','PCdoB','PCDOB','PV','REDE','PSB','PDT','PCB','PSTU','PCO','UP']);
+const CENTRO=new Set(['PSD','MDB','PSDB','CIDADANIA','SOLIDARIEDADE','AVANTE']);
+const bloco=sg=>ESQ.has(sg)?'esq':CENTRO.has(sg)?'cen':'dir';
+const BLOCOS=[['esq','Esquerda','#D9213A'],['cen','Centro','#9AA0A8'],['dir','Direita','#2F5BD3']];
+// 27 cadeiras do Senado eleitas em 2022 (mandato até 2031), com o partido pelo qual cada um foi eleito
+const SEN2022=[['ac','Alan Rick','UNIÃO'],['al','Renan Filho','MDB'],['ap','Davi Alcolumbre','UNIÃO'],['am','Omar Aziz','PSD'],['ba','Otto Alencar','PSD'],['ce','Camilo Santana','PT'],['df','Damares Alves','REPUBLICANOS'],['es','Magno Malta','PL'],['go','Wilder Morais','PL'],['ma','Flávio Dino','PSB'],['mt','Wellington Fagundes','PL'],['ms','Tereza Cristina','PP'],['mg','Cleitinho','REPUBLICANOS'],['pa','Beto Faro','PT'],['pb','Efraim Filho','UNIÃO'],['pr','Sergio Moro','PL'],['pe','Teresa Leitão','PT'],['pi','Wellington Dias','PT'],['rj','Romário','PL'],['rn','Rogério Marinho','PL'],['rs','Hamilton Mourão','REPUBLICANOS'],['ro','Jaime Bagattoli','PL'],['rr','Dr. Hiran','PP'],['sc','Jorge Seif','PL'],['sp','Marcos Pontes','PL'],['se','Laércio Oliveira','PP'],['to','Professora Dorinha','UNIÃO']];
+
+// posições das cadeiras num meio-círculo, da esquerda pra direita (fileiras de dentro pra fora)
+function lugares(N){
+  const R=Math.max(3,Math.round(.55*Math.sqrt(N))+1),r0=.44,raios=[...Array(R)].map((_,i)=>r0+(1-r0)*i/(R-1));
+  const soma=raios.reduce((a,b)=>a+b,0);let por=raios.map(r=>Math.max(1,Math.round(N*r/soma)));
+  por[R-1]+=N-por.reduce((a,b)=>a+b,0);
+  const pts=[];raios.forEach((r,i)=>{const n=por[i];for(let k=0;k<n;k++){const t=n>1?Math.PI*(1-k/(n-1)):Math.PI/2;pts.push({x:r*Math.cos(t),y:r*Math.sin(t),t,r});}});
+  pts.sort((a,b)=>(b.t-a.t)||(a.r-b.r));
+  return {pts,raio:(1-r0)/(R-1)*.4};
+}
+// cadeiras: [{b:'esq'|'cen'|'dir'|null, f:true se é só projeção}] -> desenho
+function desenharPlenario(el,cadeiras,legenda){
+  const N=cadeiras.length,{pts,raio}=lugares(N),cor=Object.fromEntries(BLOCOS.map(b=>[b[0],b[2]]));
+  // ordem: esquerda | metade dos indefinidos | centro | outra metade | direita
+  const g=k=>cadeiras.filter(c=>c.b===k),pend=cadeiras.filter(c=>!c.b),meio=Math.ceil(pend.length/2);
+  const ord=[...g('esq').sort((a,b)=>a.f-b.f),...pend.slice(0,meio),...g('cen'),...pend.slice(meio),...g('dir').sort((a,b)=>b.f-a.f)];
+  const maioria=Math.floor(N/2)+1;
+  el.innerHTML=`<svg viewBox="-1.06 -1.06 2.12 1.14" role="img" aria-label="${legenda}">
+    <line class="mai" x1="0" y1="-.32" x2="0" y2="-1.04"/>
+    ${pts.map((p,i)=>{const c=ord[i]||{};const f=c.b?`fill="${cor[c.b]}"${c.f?' fill-opacity=".38"':''}`:'fill="none" stroke="currentColor" stroke-opacity=".28" stroke-width=".006"';
+      return `<circle cx="${p.x.toFixed(4)}" cy="${(-p.y).toFixed(4)}" r="${(c.b?raio:raio*.86).toFixed(4)}" ${f}/>`;}).join('')}
+    <text class="tot" x="0" y="-.1" text-anchor="middle">${N}</text>
+    <text class="sub" x="0" y="-.02" text-anchor="middle">cadeiras · maioria ${maioria}</text>
+  </svg>`;
+}
+function legendaPlen(el,cadeiras,extra){
+  const N=cadeiras.length,pend=cadeiras.filter(c=>!c.b).length;
+  el.innerHTML=BLOCOS.map(([k,nome,cor])=>{
+    const cs=cadeiras.filter(c=>c.b===k),porP={};cs.forEach(c=>porP[c.sg]=(porP[c.sg]||0)+1);
+    const proj=cs.filter(c=>c.f).length;
+    return `<div class="bloco" style="--c:${cor}"><div class="bt1"><span class="bn">${nome}</span><span class="bq">${cs.length}</span></div>
+      <div class="bp">${Object.entries(porP).sort((a,b)=>b[1]-a[1]).map(([sg,n])=>`<span>${sg} <b>${n}</b></span>`).join('')||'—'}${proj?`<span>(${proj} na frente, ainda sem confirmação)</span>`:''}</div></div>`;
+  }).join('')+(pend?`<div class="bloco pend" style="--c:var(--fraco)"><div class="bt1"><span class="bn">A definir</span><span class="bq">${pend}</span></div></div>`:'')
+  +`<div class="maioria">Maioria: <b>${Math.floor(N/2)+1}</b> cadeiras${extra?' · '+extra:''}</div>`;
+}
+
+// Câmara: soma os eleitos dos 27 estados (deputado federal). Arquivos grandes: busca no máximo 1x por minuto.
+let camara={},camaraEm=0;
+async function buscarCamara(forcar){
+  if(!forcar&&Date.now()-camaraEm<60000) return; camaraEm=Date.now();
+  const rs=await Promise.all(UFS.map(([uf])=>buscarArquivo(ELEICAO[1].est,uf,'0006').catch(()=>null)));
+  UFS.forEach(([uf],i)=>{const n=rs[i],a=camara[uf];if(n&&(!a||n.pst>=a.pst))camara[uf]=n;});
+  if(tela==='camara'&&!saindo) desenharCamara();
+}
+function desenharCamara(){
+  const cad=[];let estadosOk=0,faltaArq=0;
+  for(const [uf] of UFS){
+    const r=camara[uf];if(!r){faltaArq++;continue;}
+    const vagas=r.nv||0,el=montar(r,null).filter(eleito).slice(0,vagas);
+    if(el.length>=vagas&&vagas)estadosOk++;
+    el.forEach(c=>cad.push({b:bloco(c.sg),sg:c.sg}));
+    for(let k=el.length;k<vagas;k++)cad.push({b:null});
+  }
+  $('camVagas').textContent=cad.length||513;
+  desenharPlenario($('camDes'),cad.length?cad:[...Array(513)].map(()=>({b:null})),'Câmara dos Deputados');
+  legendaPlen($('camLeg'),cad.length?cad:[...Array(513)].map(()=>({b:null})),`${estadosOk} de 27 estados fechados`);
+  const marcados=cad.filter(c=>c.b).length;
+  $('camNota').textContent=faltaArq?'Buscando os números de todos os estados no TSE…'
+    :marcados?'Cada cadeira colorida é um deputado que o TSE já confirmou como eleito. As vazias ainda não foram definidas.'
+    :'O TSE ainda não confirmou nenhum deputado eleito. As cadeiras vão se pintando conforme cada estado fecha a conta das vagas (pelos votos de cada partido).';
+}
+
+// Senado: 27 cadeiras de 2022 + as 54 de hoje (2 por estado). Sem confirmação do TSE, mostra quem está na frente, mais clarinho.
+let senado={},senadoEm=0;
+async function buscarSenado(forcar){
+  if(!forcar&&Date.now()-senadoEm<20000) return; senadoEm=Date.now();
+  const rs=await Promise.all(UFS.map(([uf])=>buscarArquivo(ELEICAO[1].est,uf,'0005').catch(()=>null)));
+  UFS.forEach(([uf],i)=>{const n=rs[i],a=senado[uf];if(n&&(!a||n.pst>=a.pst))senado[uf]=n;});
+  if(tela==='senado'&&!saindo) desenharSenado();
+}
+function desenharSenado(){
+  const cad=SEN2022.map(([uf,nm,sg])=>({b:bloco(sg),sg}));let conf=0,frente=0;
+  for(const [uf] of UFS){
+    const r=senado[uf],vagas=(r&&r.nv)||2,todos=montar(r,null),el=todos.filter(eleito);
+    const escolhidos=el.length?el.slice(0,vagas):(r&&r.vv?todos.slice(0,vagas):[]);
+    escolhidos.forEach(c=>{const f=!eleito(c);f?frente++:conf++;cad.push({b:bloco(c.sg),sg:c.sg,f});});
+    for(let k=escolhidos.length;k<vagas;k++)cad.push({b:null});
+  }
+  desenharPlenario($('senDes'),cad,'Senado Federal');
+  legendaPlen($('senLeg'),cad,`${conf} de 54 vagas de hoje confirmadas`);
+  $('senNota').textContent=`27 cadeiras eleitas em 2022 (pelo partido da eleição) + 54 em disputa hoje. `+(frente?'As mais apagadas são de quem está na frente no estado, mas o TSE ainda não confirmou.':'Todas as vagas de hoje já foram confirmadas pelo TSE.');
 }
 
 /* ---------- relógios das telas (param quando o botão Pausar está ligado; os números continuam chegando) ---------- */
@@ -609,10 +739,11 @@ function ligarRelogios(){
   if(pausado) return;
   relogio=setInterval(()=>irPara(ufAt+1),TROCA);
   depRelogio=setInterval(mostrarDeps,DEP_CADA);
-  if(modoDep){
+  if(tela==='deps'){
     pagRelogio=setInterval(()=>trocarPagina(1),DEP_PAG); // muitas cadeiras (SP tem 70): passa de 30 em 30
-    volta=setTimeout(()=>{trocarTela(false);ligarRelogios();},Math.max(DEP_DURA,paginas()*DEP_PAG));
-  }
+    volta=setTimeout(()=>{trocarTela('painel');ligarRelogios();},Math.max(DEP_DURA,paginas()*DEP_PAG));
+  }else if(tela!=='painel') volta=setTimeout(()=>{trocarTela('painel');ligarRelogios();},PLEN_DURA); // Câmara/Senado: 1 min e volta
+
 }
 function botaoPausa(){const b=$('pausa');b.classList.toggle('on',pausado);b.querySelector('span').textContent=pausado?'Telas pausadas':'Pausar telas';b.querySelector('em').textContent=pausado?'Pausado':'Pausar';
   b.querySelector('svg').innerHTML=pausado?'<path d="M7 4.5v15l12-7.5z"/>':'<path d="M8 5v14M16 5v14"/>';}
@@ -620,17 +751,19 @@ $('pausa').onclick=()=>{pausado=!pausado;gravar('apuracao-pausa',pausado?'1':'0'
 botaoPausa();
 function marcarChips(){
   document.querySelectorAll('.uf').forEach(b=>{b.classList.remove('on');void b.offsetWidth;}); // reinicia a barrinha
-  document.querySelectorAll('.uf').forEach(b=>b.classList.toggle('on',modoDep?b.dataset.i==='dep':b.dataset.i===String(ufAt)));
+  document.querySelectorAll('.uf').forEach(b=>b.classList.toggle('on',tela!=='painel'?b.dataset.i===tela:b.dataset.i===String(ufAt)));
 }
 function irPara(i){
   ufAt=(i+ESTADOS.length)%ESTADOS.length;
-  if(modoDep){trocarTela(false);ligarRelogios();return;}
+  if(tela!=='painel'){trocarTela('painel');ligarRelogios();return;}
   marcarChips();deslizar();ligarRelogios();
 }
 $('ufs').style.setProperty('--troca',TROCA+'ms');
 $('ufs').innerHTML=ESTADOS.map(([uf,nome],i)=>`<button class="uf" type="button" title="${nome}" data-i="${i}">${uf.toUpperCase()}</button>`).join('')
-  +`<button class="uf ufdep" type="button" title="Deputados: escolha o estado, federal ou estadual, eleitos ou mais votados" data-i="dep" style="--troca:${DEP_DURA}ms">DEPUTADOS</button>`;
-$('ufs').onclick=e=>{const b=e.target.closest('.uf');if(!b)return;if(b.dataset.i==='dep')mostrarDeps();else irPara(+b.dataset.i);};
+  +`<button class="uf ufdep" type="button" title="Deputados: escolha o estado, federal ou estadual, eleitos ou mais votados" data-i="deps" style="--troca:${DEP_DURA}ms">DEPUTADOS</button>`
+  +`<button class="uf ufdep" type="button" title="Câmara dos Deputados: as cadeiras dos eleitos, esquerda, centro e direita" data-i="camara" style="--troca:${PLEN_DURA}ms">CÂMARA</button>`
+  +`<button class="uf ufdep" type="button" title="Senado: as 81 cadeiras, esquerda, centro e direita" data-i="senado" style="--troca:${PLEN_DURA}ms">SENADO</button>`;
+$('ufs').onclick=e=>{const b=e.target.closest('.uf');if(!b)return;const i=b.dataset.i;if(i==='deps')mostrarDeps();else if(i==='camara'||i==='senado')mostrarPlen(i);else irPara(+i);};
 function estado(txt,tipo){const e=$('estado');e.hidden=!txt;e.textContent=txt||'';e.className='demo'+(tipo?' '+tipo:'');}
 
 /* ---------- busca a cada 10 s ---------- */
@@ -658,7 +791,9 @@ async function atualizar(){
     }
     ultimo=novo; gravar('eleicoes-ultimo',JSON.stringify(novo));
     desenhar(novo);
-    if(modoDep) buscarDeps().catch(()=>{});
+    if(tela==='deps') buscarDeps().catch(()=>{});
+    if(tela==='camara') buscarCamara().catch(()=>{});
+    if(tela==='senado') buscarSenado().catch(()=>{});
     const p=novo.pres,pst=p?p.pst:0;
     if(!p||(!pst&&!p.vv)) estado(turno===2?'2º turno: aguardando os primeiros números do TSE (a partir das 17h do dia da votação). A tela atualiza sozinha.':'Aguardando os primeiros números do TSE (previsto para as 17h). A tela atualiza sozinha.');
     else if(pst>=100) estado(`Apuração de Presidente do ${turno}º turno encerrada: 100% das seções.`,'ok');
@@ -672,7 +807,7 @@ try{desenhar(ultimo||{});}catch(e){ultimo=null;try{desenhar({});}catch(e2){}}
 atualizar();
 setInterval(atualizar,INTERVALO);
 ligarRelogios();
-buscarDeps().catch(()=>{});setInterval(()=>{if(!modoDep)buscarDeps().catch(()=>{});},60000);
+buscarDeps().catch(()=>{});setInterval(()=>{if(tela!=='deps')buscarDeps().catch(()=>{});},60000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){atualizar();acordar();}});
 addEventListener('online',atualizar);
 
