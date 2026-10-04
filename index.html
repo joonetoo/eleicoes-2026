@@ -77,60 +77,63 @@ button{font-family:inherit}
 .bt:focus-visible{outline:2px solid var(--azul);outline-offset:2px}
 .bt.on{background:var(--texto);color:var(--fundo);border-color:transparent}
 
-/* ---------- grade ---------- */
-main{max-width:1480px;margin:0 auto;padding-inline:16px;padding-block:14px 24px;display:grid;grid-template-columns:1.12fr 1fr 1fr;gap:14px;align-items:start}
-.cargo{background:var(--cartao);border:1px solid var(--borda);border-radius:20px;overflow:hidden;min-width:0}
-.cab{padding:14px 18px 12px}
-.cab .lugar{font-size:11px;font-weight:700;color:var(--suave);text-transform:uppercase;letter-spacing:.08em}
-.cab h2{margin:0 0 8px;font-size:24px;font-weight:400;line-height:1.2}
-.ap{display:flex;justify-content:space-between;font-size:12px;color:var(--suave);margin-bottom:5px}
-.ap b{color:var(--texto);font-weight:700;font-variant-numeric:tabular-nums}
-.trilho{height:5px;background:var(--linha);border-radius:99px;overflow:hidden}
-.trilho i{display:block;height:100%;background:var(--texto);border-radius:99px;transition:width .8s;width:0}
-.regra{font-size:11.5px;color:var(--fraco);margin-top:7px}
-
-/* duelo do Presidente */
-.duelo{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:2px 14px 8px}
-.lado{border-radius:16px;padding:12px;background:rgba(31,35,41,.035);display:grid;grid-template-columns:64px 1fr;gap:0 12px;align-items:center;transition:background .6s}
-.lado.frente.lula{background:var(--lulaBg)}
-.lado.frente.fla{background:rgba(39,45,151,.07)}
-.lado img{grid-row:1/4;width:64px;height:64px;border-radius:50%;object-fit:cover;object-position:50% 18%;border:3px solid var(--branco);box-shadow:0 0 0 2px var(--c)}
-.lado .nm{font-weight:800;font-size:15px;line-height:1.15}
-.lado .pc{font-weight:800;font-size:30px;line-height:1.05;font-variant-numeric:tabular-nums;color:var(--ct)}
-.lado .vt{font-size:12px;color:var(--suave);font-variant-numeric:tabular-nums}
-.bd{margin:0 14px;display:flex;height:8px;border-radius:99px;overflow:hidden;background:var(--linha);position:relative}
-.bd i{display:block;transition:width .8s}
-.bd:after{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:2px;background:var(--texto)}
-.sg{box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
-.dif{margin:7px 14px 8px;font-size:13px;color:var(--suave);text-align:center}
-.dif b{color:var(--texto)}
-.sep{font-size:11px;font-weight:700;color:var(--fraco);text-transform:uppercase;letter-spacing:.08em;padding:6px 18px 2px;border-top:1px solid var(--linha)}
-
-/* linhas de candidato */
-.lista{list-style:none;margin:0;padding:0 0 6px}
-.cand{display:grid;grid-template-columns:42px minmax(0,1fr) auto;gap:0 12px;align-items:center;padding:7px 18px;border-top:1px solid var(--linha);transition:background .6s}
-.cand:first-child{border-top:0}
-.foto{grid-row:1/4;width:42px;height:42px;border-radius:50%;object-fit:cover;object-position:50% 18%;background:var(--linha)}
-.nome{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.meta{font-size:12px;color:var(--suave);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.sg{color:#fff;font-weight:700;font-size:10px;padding:1px 5px;border-radius:4px}
+/* ---------- painel em faixas, de cima pra baixo (feito pra ler de longe) ----------
+   1) Presidente: Lula x Flávio grandes   2) Governador PR: 3 mais votados
+   3) Senado PR: 3 mais votados           4) barra das urnas apuradas no Brasil */
+:root{--fotoP:clamp(84px,16vh,160px);--fotoC:clamp(56px,9vh,92px)}
+main{max-width:1480px;margin:0 auto;padding:10px 16px 8px;display:flex;flex-direction:column;gap:10px}
+.cargo{background:var(--cartao);border:1px solid var(--borda);border-radius:24px;min-width:0;overflow:hidden}
+.lugar{font-size:12px;font-weight:700;color:var(--suave);text-transform:uppercase;letter-spacing:.08em}
+.cargo h2{margin:0;font-size:26px;font-weight:400;line-height:1.15}
+.ap{font-size:13px;color:var(--suave);font-variant-numeric:tabular-nums}
+.ap b{color:var(--texto);font-weight:700}
+.regra{font-size:12px;color:var(--fraco)}
+.sg{color:#fff;font-weight:700;font-size:11px;padding:2px 6px;border-radius:5px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
 .num{font-weight:700;color:var(--texto)}
-.dir{grid-row:1/3;grid-column:3;text-align:right}
-.pc2{font-size:19px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1}
-.vt2{font-size:11.5px;color:var(--suave);font-variant-numeric:tabular-nums}
-.barra{grid-column:2/-1;height:4px;border-radius:99px;background:var(--linha);overflow:hidden;margin-top:5px}
-.barra i{display:block;height:100%;border-radius:99px;transition:width .8s}
-.tag{font-size:10px;font-weight:800;padding:1px 6px;border-radius:4px;letter-spacing:.04em;white-space:nowrap;display:inline-block}
+.tag{font-size:11px;font-weight:800;padding:2px 7px;border-radius:5px;letter-spacing:.04em;white-space:nowrap;display:inline-block}
 .tag.el{background:var(--okBg);color:var(--ok)}
 .tag.t2{background:var(--t2Bg);color:var(--t2)}
-.cand.top .nome{font-weight:800}
-.cand.top .pc2{font-size:22px}
-.cand.lula.top{background:var(--lulaBg)}
-.mini .cand{padding:5px 18px;grid-template-columns:30px minmax(0,1fr) auto}
-.mini .foto{width:30px;height:30px}
-.mini .nome{font-size:13px}
-.mini .pc2{font-size:15px}
-.mini .barra{display:none}
+
+/* Presidente */
+.pres{padding:14px 16px 16px}
+.pres .cab{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;padding:0 6px 10px}
+.dif{margin:0 0 0 auto;font-size:clamp(15px,2.2vh,20px);color:var(--suave)}
+.dif b{color:var(--texto)}
+.duelo{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.lado{border-radius:20px;padding:clamp(12px,2vh,22px) clamp(14px,1.6vw,26px);background:rgba(31,35,41,.035);display:grid;grid-template-columns:auto minmax(0,1fr);gap:0 clamp(14px,1.5vw,26px);align-items:center;transition:background .6s}
+.lado img{grid-row:1/5;width:var(--fotoP);height:var(--fotoP);border-radius:50%;object-fit:cover;object-position:50% 18%;border:4px solid var(--branco);box-shadow:0 0 0 3px var(--c);background:var(--linha)}
+.lado .nm{font-weight:800;font-size:clamp(20px,3vh,32px);line-height:1.1}
+.ptd{display:flex;gap:7px;align-items:center;flex-wrap:wrap;font-size:14px;margin-top:4px}
+.lado .pc{font-weight:800;font-size:clamp(48px,9.5vh,104px);line-height:1;font-variant-numeric:tabular-nums;color:var(--ct);letter-spacing:-.02em;margin-top:6px}
+.lado .vt{font-size:clamp(14px,2vh,19px);color:var(--suave);font-variant-numeric:tabular-nums;margin-top:2px}
+.bd{margin-top:12px;display:flex;height:12px;border-radius:99px;overflow:hidden;background:var(--linha);position:relative}
+.bd i{display:block;transition:width .8s}
+.bd:after{content:"";position:absolute;left:50%;top:0;bottom:0;width:2px;background:var(--texto)}
+
+/* Governador e Senado: 3 cartões */
+.faixa{display:grid;grid-template-columns:clamp(150px,14vw,210px) minmax(0,1fr);gap:14px;padding:14px 16px}
+.faixa .cab{display:flex;flex-direction:column;justify-content:center;gap:6px;padding-left:6px}
+.tres{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.card{position:relative;border-radius:18px;padding:clamp(10px,1.6vh,18px) 16px;background:rgba(31,35,41,.035);display:grid;grid-template-columns:auto minmax(0,1fr);gap:0 14px;align-items:center;overflow:hidden;transition:background .6s}
+.card img{grid-row:1/5;width:var(--fotoC);height:var(--fotoC);border-radius:50%;object-fit:cover;object-position:50% 18%;border:3px solid var(--branco);box-shadow:0 0 0 2px var(--c);background:var(--linha)}
+.card .nm{font-weight:800;font-size:clamp(15px,2.2vh,21px);line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:26px}
+.card .ptd{font-size:13px;margin-top:2px}
+.card .pc{font-weight:800;font-size:clamp(28px,5.4vh,56px);line-height:1.05;font-variant-numeric:tabular-nums;letter-spacing:-.01em;margin-top:2px}
+.card .vt{font-size:clamp(12px,1.6vh,15px);color:var(--suave);font-variant-numeric:tabular-nums}
+.card .barra{position:absolute;left:0;right:0;bottom:0;height:5px;background:var(--linha)}
+.card .barra i{display:block;height:100%;transition:width .8s}
+.pos{position:absolute;top:10px;right:14px;font-size:14px;font-weight:800;color:var(--fraco)}
+
+/* urnas apuradas no Brasil */
+.urnas{padding:12px 22px 14px}
+.urnas .top{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:10px}
+.urnas .tit{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--suave)}
+.urnas .ja{font-size:clamp(22px,3.4vh,34px);font-weight:800;font-variant-numeric:tabular-nums}
+.urnas .sec{font-size:13px;color:var(--fraco);font-variant-numeric:tabular-nums}
+.urnas .falta{margin-left:auto;font-size:clamp(16px,2.4vh,24px);color:var(--suave);font-variant-numeric:tabular-nums}
+.urnas .falta b{color:var(--texto)}
+.urnas .trilho{height:16px;border-radius:99px;background:var(--linha);overflow:hidden}
+.urnas .trilho i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--ok),#2FB574);border-radius:99px;transition:width .8s}
 
 /* aviso da virada + confete */
 .toast{position:fixed;left:50%;top:18px;transform:translate(-50%,-20px);opacity:0;z-index:60;background:var(--toastBg);-webkit-backdrop-filter:blur(24px) saturate(1.6);backdrop-filter:blur(24px) saturate(1.6);border:1px solid var(--vidroBorda);box-shadow:0 18px 50px -12px rgba(0,0,0,.3);border-radius:22px;padding:12px 18px 12px 12px;display:flex;gap:12px;align-items:center;pointer-events:none;transition:.45s cubic-bezier(.2,1.2,.4,1);max-width:calc(100vw - 32px)}
@@ -142,8 +145,8 @@ main{max-width:1480px;margin:0 auto;padding-inline:16px;padding-block:14px 24px;
 
 /* ================= Mac: Liquid Glass ================= */
 @media (min-width:821px){
-  body{min-height:100vh;background:var(--manchas),var(--fundo);background-attachment:fixed}
-  .topo{margin-top:12px;padding:10px 14px 10px 22px;max-width:calc(1480px - 32px);width:calc(100% - 32px);border-radius:24px;
+  body{min-height:100vh;padding-top:12px;background:var(--manchas),var(--fundo);background-attachment:fixed}
+  .topo{margin-top:0;padding:10px 14px 10px 22px;max-width:calc(1480px - 32px);width:calc(100% - 32px);border-radius:24px;
     background:var(--vidroTopo);
     -webkit-backdrop-filter:blur(26px) saturate(1.6);backdrop-filter:blur(26px) saturate(1.6);
     border:1px solid var(--vidroBorda);box-shadow:inset 0 1px 0 var(--vidroBrilho),0 14px 30px -20px var(--sombra)}
@@ -152,15 +155,14 @@ main{max-width:1480px;margin:0 auto;padding-inline:16px;padding-block:14px 24px;
     -webkit-backdrop-filter:blur(30px) saturate(1.6);backdrop-filter:blur(30px) saturate(1.6);
     border:1px solid var(--vidroBorda);
     box-shadow:inset 0 1px 0 var(--vidroBrilho),0 22px 44px -26px var(--sombra)}
-  .lado{background:var(--lado)}
+  .lado,.card{background:var(--lado)}
   .bt{background:var(--btBg);border-color:var(--vidroBorda);box-shadow:inset 0 1px 0 var(--vidroBrilho)}
-  .cand,.sep{border-top-color:var(--linha)}
 }
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
   @media (min-width:821px){.cargo,.topo{background:var(--cartao)}}
 }
-/* telas médias (Mac com janela menor): 2 colunas */
-@media (max-width:1180px) and (min-width:761px){main{grid-template-columns:1fr 1fr}.cargo.pres{grid-column:1/-1}}
+/* telas médias: título do Governador/Senado vai pra cima dos cartões */
+@media (max-width:1180px) and (min-width:761px){.faixa{grid-template-columns:1fr}.faixa .cab{flex-direction:row;align-items:baseline;flex-wrap:wrap;gap:10px}}
 
 /* ================= celular: One UI ================= */
 @media (max-width:760px){
@@ -174,14 +176,30 @@ main{max-width:1480px;margin:0 auto;padding-inline:16px;padding-block:14px 24px;
     border-top:1px solid var(--linha);box-shadow:0 -10px 24px -18px rgba(20,30,60,.35)}
   .acoes .bt{flex:1;white-space:nowrap;padding:8px 10px;justify-content:center;min-height:50px;border-radius:999px;border:0;background:var(--branco);box-shadow:0 1px 2px rgba(20,30,60,.12);font-size:14px}
   .acoes .bt.on{background:var(--texto);color:var(--fundo)}
-  main{grid-template-columns:1fr;gap:12px;padding-block:4px 16px}
+  main{gap:12px;padding:4px 12px 16px}
   .cargo{border-radius:26px;border:0;box-shadow:0 1px 2px rgba(20,30,60,.08)}
-  .cab{padding:20px 20px 12px}
-  .cand,.mini .cand{padding-left:20px;padding-right:20px}
-  .duelo{gap:8px;padding:2px 12px 8px}
+  .pres{padding:16px 12px}
+  .pres .cab{padding:0 8px 10px}
+  .dif{margin:0;width:100%;font-size:14px}
+  .duelo{gap:8px}
   .lado{grid-template-columns:1fr;justify-items:center;text-align:center;padding:14px 8px;border-radius:22px}
-  .lado img{grid-row:auto;width:72px;height:72px;margin-bottom:6px}
-  .lado .pc{font-size:28px}
+  .lado img{grid-row:auto;width:84px;height:84px;margin-bottom:8px}
+  .lado .nm{font-size:17px}
+  .lado .ptd{justify-content:center}
+  .lado .pc{font-size:38px}
+  .lado .vt{font-size:13px}
+  .faixa{grid-template-columns:1fr;padding:16px 12px;gap:10px}
+  .faixa .cab{padding:0 8px;gap:4px}
+  .tres{gap:8px}
+  .card{grid-template-columns:1fr;justify-items:center;text-align:center;padding:12px 6px 14px}
+  .card img{grid-row:auto;width:56px;height:56px;margin-bottom:6px}
+  .card .nm{font-size:13px;white-space:normal;padding-right:0}
+  .card .ptd{justify-content:center;font-size:11px}
+  .card .pc{font-size:24px}
+  .card .vt{font-size:11px}
+  .pos{top:8px;right:10px;font-size:12px}
+  .urnas{padding:16px 18px}
+  .urnas .falta{margin-left:0}
   .toast{top:calc(env(safe-area-inset-top,0px) + 12px)}
 }
 .bt em{display:none;font-style:normal}
@@ -194,6 +212,7 @@ main{max-width:1480px;margin:0 auto;padding-inline:16px;padding-block:14px 24px;
 .demo.ok{background:var(--okBg);color:var(--ok)}
 [hidden]{display:none!important}
 .lado.frente{background:color-mix(in srgb,var(--c) 9%,transparent)!important}
+.card.frente{background:color-mix(in srgb,var(--c) 10%,transparent)!important}
 .vivo.parado i{animation:none;opacity:.5}
 .vazio .pc2,.vazio .pc{opacity:.45}
 </style>
@@ -215,28 +234,28 @@ main{max-width:1480px;margin:0 auto;padding-inline:16px;padding-block:14px 24px;
 
 <main>
   <section class="cargo pres" aria-label="Presidente">
-    <div class="cab"><div class="lugar" id="lugarP">Brasil</div><h2>Presidente</h2>
-      <div class="ap"><span>Seções apuradas</span><b id="apP">0,00%</b></div><div class="trilho"><i id="trP"></i></div></div>
+    <div class="cab"><h2>Presidente</h2><span class="lugar" id="lugarP">Brasil</span><p class="dif" id="dif">Aguardando dados do TSE</p></div>
     <div class="duelo">
-      <div class="lado" id="ladoA"><img id="fA" alt=""><div class="nm"><span id="nA"></span> <span class="sg" id="sA"></span> <span class="num" id="numA"></span> <span id="tagA"></span></div><div class="pc" id="pA">0,00%</div><div class="vt" id="vA">0 votos</div></div>
-      <div class="lado" id="ladoB"><img id="fB" alt=""><div class="nm"><span id="nB"></span> <span class="sg" id="sB"></span> <span class="num" id="numB"></span> <span id="tagB"></span></div><div class="pc" id="pB">0,00%</div><div class="vt" id="vB">0 votos</div></div>
+      <div class="lado" id="ladoA"><img id="fA" alt=""><div class="nm" id="nA"></div><div class="ptd"><span class="sg" id="sA"></span><span class="num" id="numA"></span><span id="tagA"></span></div><div class="pc" id="pA">0,00%</div><div class="vt" id="vA">0 votos</div></div>
+      <div class="lado" id="ladoB"><img id="fB" alt=""><div class="nm" id="nB"></div><div class="ptd"><span class="sg" id="sB"></span><span class="num" id="numB"></span><span id="tagB"></span></div><div class="pc" id="pB">0,00%</div><div class="vt" id="vB">0 votos</div></div>
     </div>
     <div class="bd"><i id="dA"></i><i style="flex:1"></i><i id="dB"></i></div>
-    <p class="dif" id="dif">Aguardando dados do TSE</p>
-    <div class="sep" id="sepP">Demais candidatos</div>
-    <ul class="lista mini" id="lP"></ul>
   </section>
-  <section class="cargo" aria-label="Governador do Paraná">
-    <div class="cab"><div class="lugar" id="lugarG">Paraná</div><h2>Governador</h2>
-      <div class="ap"><span>Seções apuradas</span><b id="apG">0,00%</b></div><div class="trilho"><i id="trG"></i></div>
-      <div class="regra" id="regraG">Mais de 50% dos válidos vence no 1º turno.</div></div>
-    <ul class="lista" id="lG"></ul>
+  <section class="cargo faixa" aria-label="Governador do Paraná">
+    <div class="cab"><span class="lugar" id="lugarG">Paraná</span><h2>Governador</h2>
+      <span class="ap"><b id="apG">0,00%</b> das seções do PR</span>
+      <span class="regra" id="regraG">Mais de 50% dos válidos vence no 1º turno.</span></div>
+    <div class="tres" id="lG"></div>
   </section>
-  <section class="cargo" aria-label="Senado do Paraná">
-    <div class="cab"><div class="lugar" id="lugarS">Paraná</div><h2>Senador</h2>
-      <div class="ap"><span>Seções apuradas</span><b id="apS">0,00%</b></div><div class="trilho"><i id="trS"></i></div>
-      <div class="regra">2 vagas: os 2 mais votados são eleitos.</div></div>
-    <ul class="lista" id="lS"></ul>
+  <section class="cargo faixa" aria-label="Senado do Paraná">
+    <div class="cab"><span class="lugar" id="lugarS">Paraná</span><h2>Senador</h2>
+      <span class="ap"><b id="apS">0,00%</b> das seções do PR</span>
+      <span class="regra">2 vagas: os 2 mais votados são eleitos.</span></div>
+    <div class="tres" id="lS"></div>
+  </section>
+  <section class="cargo urnas" aria-label="Urnas apuradas no Brasil">
+    <div class="top"><span class="tit">Urnas apuradas no Brasil</span><span class="ja" id="apP">0,00%</span><span class="sec" id="secP"></span><span class="falta">Faltam <b id="faltaP">100,00%</b></span></div>
+    <div class="trilho"><i id="trP"></i></div>
   </section>
 </main>
 
@@ -287,7 +306,7 @@ function interpretar(d,ele,uf){
   if(Array.isArray(d.carg)) for(const c of d.carg) for(const a of c.agr||[]) for(const p of a.par||[]) for(const x of p.cand||[]) pega(x,p.sg); // completo
   if(Array.isArray(d.cand)) d.cand.forEach(x=>pega(x));                                                                               // simplificado
   const s=d.s||d, v=d.v||d;
-  return {pst:num(s.pst), vv:num(v.vv), votos, lista, data:(d.dt&&d.ht)?d.dt+' '+d.ht:'', gerado:(d.dg||'')+' '+(d.hg||'')};
+  return {pst:num(s.pst), ts:num(s.ts), st:num(s.st), vv:num(v.vv), votos, lista, data:(d.dt&&d.ht)?d.dt+' '+d.ht:'', gerado:(d.dg||'')+' '+(d.hg||'')};
 }
 const quando=t=>{const m=/(\d\d)\/(\d\d)\/(\d{4})\s+(\d\d):(\d\d):(\d\d)/.exec(t||'');return m?+(m[3]+m[2]+m[1]+m[4]+m[5]+m[6]):0;};
 async function buscar(url,ele,uf){
@@ -310,7 +329,9 @@ function montar(r,fixos){
   const base=r&&Array.isArray(r.lista)&&r.lista.length?r.lista:(fixos||[]).map(([n,nm,sg,sq])=>({n,nm,sg,sq,ele:ELEICAO[1].pres,uf:'br'}));
   const tot=r?r.vv:0;
   return base.map(c=>{const x=(r&&r.votos&&r.votos[c.n])||{v:0,pc:0,e:'',st:''};return {...c,v:x.v,pc:x.pc||(tot?x.v/tot*100:0),e:x.e,st:x.st};})
-    .sort((a,b)=>(b.v-a.v)||a.nm.localeCompare(b.nm,'pt-BR'));
+    .sort((a,b)=>(b.v-a.v)||(ordem(fixos,a.n)-ordem(fixos,b.n))||a.nm.localeCompare(b.nm,'pt-BR'));
+}
+function ordem(fixos,n){const i=(fixos||[]).findIndex(f=>f[0]===n);return i<0?999:i;
 }
 function foto(c){return FOTOS_LOCAIS.has(c.sq)?`fotos/${c.sq}.jpeg`:fotoTSE(c.ele,c.uf,c.sq);}
 function etiqueta(c){
@@ -319,19 +340,25 @@ function etiqueta(c){
   if(c.e==='s'||(st.includes('eleito')&&!st.includes('não')&&!st.includes('nao'))) return '<span class="tag el">ELEITO</span>';
   return '';
 }
-function linhas(el,ord,destaque){
-  const max=Math.max(ord[0]?ord[0].pc:0,.0001);
-  el.innerHTML=ord.map((c,i)=>{
+function cards(el,ord){
+  el.innerHTML=ord.slice(0,3).map((c,i)=>{
     const cor=COR[c.sg]||'#666';
-    return `<li class="cand${destaque&&i===0&&c.v>0?' top':''}${c.n===13&&c.uf==='br'?' lula':''}">
-      <img class="foto" src="${foto(c)}" alt="Foto oficial de ${c.nm}">
-      <span class="nome">${c.nm}</span>
-      <div class="dir"><div class="pc2">${nf(c.pc)}%</div><div class="vt2">${ni(c.v)} votos</div></div>
-      <span class="meta"><span class="sg" style="background:${cor}">${c.sg}</span><span class="num">${c.n}</span>${etiqueta(c)}</span>
-      <span class="barra"><i style="width:${c.pc/max*100}%;background:${cor}"></i></span></li>`;
+    return `<div class="card${i===0&&c.v>0?' frente':''}" style="--c:${cor}">
+      <img src="${foto(c)}" alt="Foto oficial de ${c.nm}">
+      <div class="nm">${c.nm}</div>
+      <div class="ptd"><span class="sg" style="background:${cor}">${c.sg}</span><span class="num">${c.n}</span>${etiqueta(c)}</div>
+      <div class="pc" style="color:${COR_TEXTO[c.sg]||'var(--texto)'}">${nf(c.pc)}%</div>
+      <div class="vt">${ni(c.v)} votos</div>
+      ${c.v>0?`<span class="pos">${i+1}º</span>`:''}
+      <span class="barra"><i style="width:${Math.min(c.pc,100)}%;background:${cor}"></i></span></div>`;
   }).join('');
 }
-function apurado(idAp,idTr,r){const p=r?r.pst:0;$(idAp).textContent=nf(p)+'%';$(idTr).style.width=p+'%';}
+function apurado(idAp,r){$(idAp).textContent=nf(r?r.pst:0)+'%';}
+function urnas(r){
+  const p=r?r.pst:0;
+  $('apP').textContent=nf(p)+'%';$('trP').style.width=p+'%';$('faltaP').textContent=nf(Math.max(0,100-p))+'%';
+  $('secP').textContent=r&&r.ts?`${ni(r.st)} de ${ni(r.ts)} seções`:'';
+}
 function lado(k,c){
   const cor=COR[c.sg]||'#666';
   $('lado'+k).style.setProperty('--c',cor);$('lado'+k).style.setProperty('--ct',COR_TEXTO[c.sg]||cor);
@@ -346,7 +373,7 @@ function desenhar(D){
   const t2=D.turno===2;
   const {pres,gov,sen}=D;
   document.body.classList.toggle('vazio',!(pres&&pres.vv));
-  apurado('apP','trP',pres);apurado('apG','trG',gov);apurado('apS','trS',sen);
+  urnas(pres);apurado('apG',gov);apurado('apS',sen);
 
   // Presidente: duelo grande. 1º turno = Lula x Flávio; 2º turno = os dois do arquivo (Lula sempre à esquerda)
   const P=montar(pres,CAND.pres);
@@ -357,17 +384,15 @@ function desenhar(D){
   if(!A.v&&!B.v) $('dif').textContent='Aguardando dados do TSE';
   else if(A.v===B.v) $('dif').innerHTML=`<b>Empate</b> entre ${A.nm} e ${B.nm}`;
   else $('dif').innerHTML=`<b>${A.v>B.v?A.nm:B.nm}</b> à frente por <b>${ni(Math.abs(A.v-B.v))}</b> votos`;
-  const outros=P.filter(c=>c!==A&&c!==B);
-  $('sepP').hidden=!outros.length;linhas($('lP'),outros,false);
   $('lugarP').textContent=t2?'Brasil · 2º turno':'Brasil';
 
   // Governador: no 2º turno, se o Paraná tiver 2º turno usa ele; senão fica o resultado final do 1º
   const govT2=t2&&D.gov2;
-  linhas($('lG'),montar(govT2?D.gov2:gov,CAND.gov),true);
-  if(govT2) apurado('apG','trG',D.gov2);
+  cards($('lG'),montar(govT2?D.gov2:gov,CAND.gov));
+  if(govT2) apurado('apG',D.gov2);
   $('lugarG').textContent=t2?(govT2?'Paraná · 2º turno':'Paraná · resultado do 1º turno'):'Paraná';
   $('regraG').textContent=govT2?'Quem tiver mais votos válidos vence.':'Mais de 50% dos válidos vence no 1º turno.';
-  linhas($('lS'),montar(sen,CAND.sen),true);
+  cards($('lS'),montar(sen,CAND.sen));
   $('lugarS').textContent=t2?'Paraná · resultado do 1º turno':'Paraná';
 
   // status do topo
