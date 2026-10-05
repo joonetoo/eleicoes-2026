@@ -144,7 +144,30 @@ main{max-width:1480px;margin:0 auto;padding:10px 16px 8px;display:flex;flex-dire
 .toast img{width:48px;height:48px;border-radius:50%;object-fit:cover;object-position:50% 18%;box-shadow:0 0 0 2px var(--pt)}
 .toast b{display:block;font-size:16px}
 .toast span{font-size:13px;color:var(--suave)}
-#confete{position:fixed;inset:0;pointer-events:none;z-index:50;width:100%;height:100%}
+#confete{position:fixed;inset:0;pointer-events:none;z-index:90;width:100%;height:100%}
+/* tela de festa quando o Lula vira */
+.festa{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;
+  background:radial-gradient(circle at 50% 38%,#F0213F 0%,#C40A27 38%,#7A0014 75%,#3A000A 100%);animation:fentra .5s ease}
+.festa[hidden]{display:none}
+.festa:before{content:"";position:absolute;left:50%;top:38%;width:220vmax;height:220vmax;margin:-110vmax 0 0 -110vmax;
+  background:repeating-conic-gradient(rgba(255,255,255,.075) 0 7deg,transparent 7deg 18deg);animation:gira 24s linear infinite}
+@keyframes gira{to{transform:rotate(360deg)}}
+@keyframes fentra{from{opacity:0;transform:scale(1.05)}to{opacity:1;transform:none}}
+.festa.sai{animation:fsai .6s ease forwards}
+@keyframes fsai{to{opacity:0}}
+.fz{position:relative;text-align:center;color:#fff;padding:20px;display:flex;flex-direction:column;align-items:center}
+.fz img{width:min(40vh,340px);height:min(40vh,340px);border-radius:50%;object-fit:cover;object-position:50% 18%;border:7px solid #fff;
+  box-shadow:0 0 0 9px #F2C14E,0 0 80px 20px rgba(255,210,90,.45),0 26px 60px rgba(0,0,0,.45);animation:pula .66s ease-in-out infinite alternate}
+@keyframes pula{to{transform:scale(1.05) rotate(-2deg)}}
+.canto{font-weight:800;line-height:1;margin-top:4vh;text-transform:uppercase;letter-spacing:.01em}
+.canto .l1{font-size:min(7.5vh,6vw);color:#fff;text-shadow:0 3px 0 rgba(0,0,0,.18),0 10px 30px rgba(0,0,0,.35)}
+.canto .l2{font-size:min(15vh,13vw);margin-top:1vh;color:#FFD66B;text-shadow:0 5px 0 #9C5B00,0 14px 40px rgba(0,0,0,.4)}
+.canto span{display:inline-block;transition:transform .12s ease,color .12s ease}
+.canto .l1 span.on{color:#FFD66B;transform:translateY(-.08em) scale(1.12)}
+.canto .l2 span.on{color:#fff;transform:translateY(-.06em) scale(1.1)}
+.fsub{margin-top:3vh;font-size:min(3.2vh,24px);font-weight:700;background:rgba(0,0,0,.25);padding:10px 22px;border-radius:99px;backdrop-filter:blur(6px)}
+.testeFesta{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:75;background:#D60828!important;color:#fff!important;border:0!important;font-size:16px!important;padding:12px 22px!important;box-shadow:0 10px 30px rgba(214,8,40,.45)!important}
+
 
 /* ================= Mac: Liquid Glass ================= */
 @media (min-width:821px){
@@ -304,6 +327,56 @@ body.extra main>.pres,body.extra main>.faixa,body.extra main>.urnas{display:none
   body:not(.extra) .card .nm{font-size:clamp(14px,min(2.5vh,calc((100cqw - min(13vh,24cqw,120px) - 100px) / 9)),23px)}
   body:not(.extra) .card .vt{font-size:clamp(12px,1.9vh,17px)}
 }
+/* ===== 2º turno: uma tela só (Presidente + apuração por estado) ===== */
+body.modo2 .ufs,body.modo2 main>section:not(#seg2){display:none!important}
+.seg2{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;gap:12px;min-height:0}
+.s2mapa{padding:14px 18px 12px;display:flex;flex-direction:column;gap:6px;min-height:0}
+.s2cab{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.s2cab h2{margin:0;font-size:24px;font-weight:400}.s2cab h2 b{font-weight:800}
+.s2cab .regra{font-size:12px}
+.s2svg{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+.s2svg svg{width:100%;height:100%;overflow:visible}
+.s2svg path{stroke:var(--fundo);stroke-width:1.6;stroke-linejoin:round;cursor:pointer;transition:fill .8s}
+.s2svg path.foco{stroke:var(--texto);stroke-width:3}
+.s2svg text{font-family:var(--f);font-weight:800;fill:#fff;paint-order:stroke;stroke:rgba(0,0,0,.35);stroke-width:3px;pointer-events:none}
+.s2svg text.p{font-weight:700;font-size:19px}
+.s2svg text.fora{fill:var(--texto);stroke:none}
+.s2svg line{stroke:var(--fraco);stroke-width:1}
+.s2leg{display:flex;gap:18px;flex-wrap:wrap;font-size:14px;color:var(--suave)}
+.s2leg i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.s2leg b{color:var(--texto)}
+.s2placar{padding:16px 20px;display:flex;flex-direction:column;gap:10px;justify-content:center;min-height:0}
+.s2topo .lugar{font-size:13px}
+.s2ap{font-size:15px;color:var(--suave);margin:2px 0 6px}
+.s2ap b{font-size:clamp(28px,5vh,46px);font-weight:800;color:var(--texto);font-variant-numeric:tabular-nums;margin-right:6px}
+.s2ap .sec{display:block;font-size:12px;color:var(--fraco)}
+.s2tr{height:10px!important}
+.s2tr i{background:linear-gradient(90deg,var(--ok),#2FB574)!important}
+.s2duelo{display:flex;flex-direction:column;gap:10px}
+.s2c{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:0 16px;padding:12px 16px;border-radius:18px;background:var(--lado,rgba(31,35,41,.035));transition:background .6s}
+.s2c.frente{background:color-mix(in srgb,var(--c) 14%,transparent)}
+.s2c img{width:clamp(64px,11vh,104px);height:clamp(64px,11vh,104px);border-radius:50%;object-fit:cover;object-position:50% 18%;border:3px solid var(--branco);box-shadow:0 0 0 3px var(--c);background:var(--linha)}
+.s2c .nm{font-weight:800;font-size:clamp(18px,3vh,28px);line-height:1.1}
+.s2c .ptd{font-size:13px;margin-top:3px}
+.s2c .vt{font-size:13px;color:var(--suave);font-variant-numeric:tabular-nums;margin-top:3px}
+.s2c .pc{font-weight:800;font-size:clamp(40px,8.5vh,84px);line-height:1;color:var(--c);font-variant-numeric:tabular-nums;letter-spacing:-.02em;text-align:right}
+.s2bd{display:flex;height:12px;border-radius:99px;overflow:hidden;background:var(--linha);position:relative}
+.s2bd i{display:block;transition:width .8s}
+.s2bd:after{content:"";position:absolute;left:50%;top:0;bottom:0;width:2px;background:var(--texto)}
+.s2placar .dif{margin:0;text-align:center;font-size:16px}
+.s2votos{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;border-top:1px solid var(--linha);padding-top:10px}
+.s2votos div{font-size:12px;color:var(--suave)}
+.s2votos b{display:block;font-size:22px;color:var(--texto);font-variant-numeric:tabular-nums}
+.s2ufs{grid-column:1/-1;padding:10px 12px;display:grid;grid-template-columns:repeat(14,minmax(0,1fr));gap:6px}
+.s2u{border-radius:10px;padding:5px 7px 6px;background:var(--lado,rgba(31,35,41,.035));font-variant-numeric:tabular-nums;cursor:default;box-shadow:inset 0 3px 0 var(--c,transparent)}
+.s2u .t{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;color:var(--fraco)}
+.s2u .t b{font-size:15px;color:var(--texto)}
+.s2u .br{display:flex;height:6px;border-radius:99px;overflow:hidden;background:var(--linha);margin:4px 0 3px}
+.s2u .br i{display:block}
+.s2u .n{display:flex;justify-content:space-between;font-size:13px;font-weight:800}
+@media (min-width:821px){body.modo2{height:100vh}body.modo2 main{min-height:0}body.modo2 .seg2{flex:1}}
+@media (max-width:1180px){.s2ufs{grid-template-columns:repeat(7,minmax(0,1fr))}}
+@media (max-width:760px){.seg2{grid-template-columns:1fr}.s2mapa{min-height:420px}.s2ufs{grid-template-columns:repeat(4,minmax(0,1fr))}.s2votos{grid-template-columns:repeat(2,1fr)}}
 .depvazio{grid-row:1/-1;align-self:center;text-align:center;font-size:18px;color:var(--suave);padding:20px}
 .depconta{font-size:.6em;font-weight:800;color:var(--ok);background:var(--okBg);padding:3px 10px;border-radius:99px;vertical-align:middle}
 .comEleitos .dep.top{background:var(--lado)!important}
@@ -346,7 +419,13 @@ body.extra main>.pres,body.extra main>.faixa,body.extra main>.urnas{display:none
 </head>
 <body>
 <canvas id="confete"></canvas>
-<div class="toast" id="toast" role="status"><img alt="" id="toastFoto" src="fotos/280002542548.jpeg"><div><b id="toastTit">Lula passou na frente</b><span id="toastTx"></span></div></div>
+<div class="festa" id="festa" hidden role="alert" aria-live="assertive">
+  <div class="fz">
+    <img id="festaFoto" alt="Lula" src="fotos/280002542548.jpeg">
+    <div class="canto" id="canto"><div class="l1"><span>O</span><span>LÊ,</span> <span>O</span><span>LÊ,</span> <span>O</span><span>LÊ,</span> <span>O</span><span>LÁ</span></div><div class="l2"><span>LU</span><span>LA,</span> <span>LU</span><span>LA!</span></div></div>
+    <div class="fsub" id="festaSub"></div>
+  </div>
+</div>
 
 <header class="topo">
   <div class="marca"><h1><b>APURAÇÃO</b> 2026</h1></div>
@@ -394,6 +473,23 @@ body.extra main>.pres,body.extra main>.faixa,body.extra main>.urnas{display:none
     <div class="plencab"><span class="lugar">Brasil · <span id="camVagas">513</span> cadeiras</span><h2>Câmara dos Deputados <b>eleitos</b></h2><span class="regra" id="camNota"></span></div>
     <div class="plencorpo"><div class="plendesenho" id="camDes"></div><div class="plenlado" id="camLeg"></div></div>
   </section>
+  <section class="seg2" id="seg2" aria-label="2º turno: Presidente" hidden>
+    <div class="cargo s2mapa">
+      <div class="s2cab"><h2>Apuração <b>por estado</b></h2><span class="regra">Cada estado na cor de quem lidera lá · quanto mais apurado, mais forte a cor · passe o mouse num estado</span></div>
+      <div class="s2svg" id="s2mapa"></div>
+      <div class="s2leg"><span><i id="s2corA"></i><b id="s2nmA">Lula</b> lidera em <b id="s2nA">0</b></span><span><i id="s2corB"></i><b id="s2nmB">Flávio</b> lidera em <b id="s2nB">0</b></span></div>
+    </div>
+    <div class="cargo s2placar">
+      <div class="s2topo"><span class="lugar">Brasil · Presidente · <span id="s2turno">2º turno</span></span>
+        <div class="s2ap"><b id="s2ap">0,00%</b> das urnas apuradas <span class="sec" id="s2sec"></span></div>
+        <div class="trilho s2tr"><i id="s2tr"></i></div></div>
+      <div class="s2duelo" id="s2duelo"></div>
+      <div class="s2bd"><i id="s2bA"></i><i style="flex:1"></i><i id="s2bB"></i></div>
+      <p class="dif" id="s2dif">Aguardando dados do TSE</p>
+      <div class="s2votos" id="s2votos"></div>
+    </div>
+    <div class="cargo s2ufs" id="s2ufs"></div>
+  </section>
   <section class="cargo plen" id="senadores" aria-label="Senadores por estado" hidden>
     <div class="plencab"><span class="lugar" id="snLugar">Paraná · 2 vagas</span><h2>Senado <b id="snUF">Paraná</b></h2><span class="ap"><b id="apSn">0,00%</b> apurado</span>
       <div class="depfiltro"><select id="fSnUF" aria-label="Estado"></select></div>
@@ -406,6 +502,7 @@ body.extra main>.pres,body.extra main>.faixa,body.extra main>.urnas{display:none
   </section>
 </main>
 
+<script src="brasil.js?v=2"></script>
 <script>
 /* ============================================================
    ELEIÇÕES 2026 — painel de apuração (projeto próprio, separado do Ritmo).
@@ -418,6 +515,8 @@ body.extra main>.pres,body.extra main>.faixa,body.extra main>.urnas{display:none
    O app troca sozinho pro 2º turno quando o TSE publica o arquivo de Presidente dele.
    ============================================================ */
 const TSE='https://resultados.tse.jus.br/oficial/ele2026';
+// links de teste: ?teste=festa (botão pra testar a festa) e ?teste=2turno (tela do 2º turno com os números do 1º)
+const TESTE=new URLSearchParams(location.search).get('teste')||'',TESTE2=TESTE==='2turno';
 const ELEICAO={1:{pres:'6257',est:'6259'},2:{pres:'6258',est:'6260'}};
 const urls=(ele,uf,cargo)=>[`${TSE}/${ele}/dados/${uf}/${uf}-c${cargo}-e00${ele}-u.json`,`${TSE}/${ele}/dados-simplificados/${uf}/${uf}-c${cargo}-e00${ele}-r.json`];
 const fotoTSE=(ele,uf,sq)=>`${TSE}/${ele}/fotos/${uf}/${sq}.jpeg`;
@@ -463,7 +562,8 @@ function interpretar(d,ele,uf){
   // votos de cada partido/federação (nominais + legenda) e quem é de cada um — pra projeção das vagas de deputado
   const agr=c0&&Array.isArray(c0.agr)?c0.agr.map(a=>({sg:a.com||a.nm,v:(a.par||[]).reduce((t,p)=>t+num(p.tvtn)+num(p.tvtl),0),ns:(a.par||[]).flatMap(p=>(p.cand||[]).map(x=>+x.n))})):null;
   const rem=d.e&&d.e.esnt!=null?num(d.e.esnt):null; // eleitores das seções que ainda não foram contadas
-  return {nv, qe:num(c0&&c0.qe), cd:c0?String(c0.cd):'', t:String(d.t||''), rem, agr, pst:num(s.pst), ts:num(s.ts), st:num(s.st), vv:num(v.vv), votos, lista, data:(d.dt&&d.ht)?d.dt+' '+d.ht:'', gerado:(d.dg||'')+' '+(d.hg||'')};
+  const vi={val:num(v.pvvc),bra:num(v.pvb),nul:num(v.ptvn),abs:num(d.e&&d.e.pa)};
+  return {vi, nv, qe:num(c0&&c0.qe), cd:c0?String(c0.cd):'', t:String(d.t||''), rem, agr, pst:num(s.pst), ts:num(s.ts), st:num(s.st), vv:num(v.vv), votos, lista, data:(d.dt&&d.ht)?d.dt+' '+d.ht:'', gerado:(d.dg||'')+' '+(d.hg||'')};
 }
 const quando=t=>{const m=/(\d\d)\/(\d\d)\/(\d{4})\s+(\d\d):(\d\d):(\d\d)/.exec(t||'');return m?+(m[3]+m[2]+m[1]+m[4]+m[5]+m[6]):0;};
 async function buscar(url,ele,uf){
@@ -566,6 +666,7 @@ function lado(k,c){
 }
 
 function desenhar(D){
+  if(D&&(D.turno===2||TESTE2)){modo2(true);try{desenharSeg2(D);}catch(e){}}else modo2(false);
   const t2=D.turno===2;
   const {pres}=D;
   document.body.classList.toggle('vazio',!(pres&&pres.vv));
@@ -840,6 +941,81 @@ $('fGovUF').value=ESTADOS[0][0];
 $('fGovUF').onchange=e=>{const u=UFS.find(x=>x[0]===e.target.value);if(!u)return;ESTADOS[0]=[u[0],u[1]];gravar('apuracao-gov',u[0]);
   deslizar();buscando=false;atualizar();};
 
+/* ---------- 2º turno: uma tela só, Presidente + apuração por estado (estilo ICL) ---------- */
+const COR_A='#D9213A',COR_B='#2F5BD3';
+const NOME_UF=Object.fromEntries([...UFS,['zz','Exterior']]);
+let estP={},s2montado=false;
+async function buscarEstP(ele){
+  const lista=[...UFS.map(u=>u[0]),'zz'];
+  const rs=await Promise.all(lista.map(uf=>buscarArquivo(ele,uf,'0001').catch(()=>null)));
+  lista.forEach((uf,i)=>{const n=rs[i],a=estP[uf];if(n&&(!a||a.ele!==ele||n.pst>=a.pst)){n.ele=ele;estP[uf]=n;}});
+}
+const PEQ={rn:[1048,330],pb:[1048,362],pe:[1048,394],al:[1048,426],se:[1048,458],es:[1048,640],rj:[1048,700]}; // estados pequenos: nome do lado
+function montarMapa(){
+  if(s2montado||typeof MAPA_BR==='undefined') return; s2montado=true;
+  const M=MAPA_BR;
+  $('s2mapa').innerHTML=`<svg viewBox="0 0 1150 ${M.h}" role="img" aria-label="Mapa do Brasil por estado">
+    ${Object.entries(M.uf).map(([uf,d])=>`<path data-uf="${uf}" d="${d}"/>`).join('')}
+    ${Object.entries(M.c).map(([uf,[x,y]])=>PEQ[uf]
+      ?`<line x1="${x}" y1="${y}" x2="${PEQ[uf][0]-8}" y2="${PEQ[uf][1]-7}"/><text class="fora" x="${PEQ[uf][0]}" y="${PEQ[uf][1]}" font-size="24"><tspan>${uf.toUpperCase()}</tspan> <tspan class="p" id="mp-${uf}"></tspan></text>`
+      :`<text x="${x}" y="${y}" text-anchor="middle" font-size="${uf==='df'?16:27}">${uf.toUpperCase()}</text><text class="p" id="mp-${uf}" x="${x}" y="${y+(uf==='df'?18:23)}" text-anchor="middle"${uf==='df'?' style="font-size:13px"':''}></text>`).join('')}
+  </svg>`;
+  const el=$('s2mapa');
+  const mostra=e=>{const p=e.target.closest('path[data-uf]');el.querySelectorAll('.foco').forEach(x=>x!==p&&x.classList.remove('foco'));
+    if(!p){dica.hidden=true;return;} p.classList.add('foco');dica.innerHTML=dicaUF(p.dataset.uf);dica.hidden=false;
+    const w=dica.offsetWidth,h=dica.offsetHeight;let x=e.clientX+14,y=e.clientY-h-12;if(x+w>innerWidth-8)x=e.clientX-w-14;if(y<8)y=e.clientY+16;dica.style.left=x+'px';dica.style.top=y+'px';};
+  el.addEventListener('pointermove',mostra);el.addEventListener('click',mostra);
+  el.addEventListener('pointerleave',()=>{dica.hidden=true;el.querySelectorAll('.foco').forEach(x=>x.classList.remove('foco'));});
+}
+let s2A=null,s2B=null;
+function parUF(uf){ // votos de A e B num estado
+  const r=estP[uf];if(!r||!s2A) return null;
+  const a=(r.votos[s2A.n]||{}).v||0,b=(r.votos[s2B.n]||{}).v||0,t=a+b;
+  return {r,a,b,pa:t?a/t*100:0,pb:t?b/t*100:0,pst:r.pst};
+}
+function dicaUF(uf){
+  const x=parUF(uf);if(!x) return `<b>${NOME_UF[uf]||uf}</b><span>aguardando dados do TSE</span>`;
+  return `<b>${NOME_UF[uf]}</b><span>${nf(x.pst)}% das urnas apuradas</span>
+    <span><i style="background:${COR_A}">${s2A.nm}</i>${nf(x.pa)}% · ${ni(x.a)} votos</span>
+    <span><i style="background:${COR_B}">${s2B.nm}</i>${nf(x.pb)}% · ${ni(x.b)} votos</span>`;
+}
+function desenharSeg2(D){
+  montarMapa();
+  const pres=D.pres,P=montar(pres,CAND.pres),t2=D.turno===2;
+  s2A=P.find(c=>c.n===13)||P[0];s2B=P.find(c=>c!==s2A&&(c.n===22||t2))||P.find(c=>c!==s2A);
+  if(!s2A||!s2B) return;
+  const tot=s2A.v+s2B.v,pA=t2?s2A.pc:(tot?s2A.v/tot*100:0),pB=t2?s2B.pc:(tot?s2B.v/tot*100:0);
+  $('s2turno').textContent=t2?'2º turno':'1º turno (Lula x Flávio)';
+  const pst=pres?pres.pst:0;$('s2ap').textContent=nf(pst)+'%';$('s2tr').style.width=pst+'%';
+  $('s2sec').textContent=pres&&pres.ts?`${ni(pres.st)} de ${ni(pres.ts)} seções · faltam ${nf(Math.max(0,100-pst))}%`:'';
+  $('s2duelo').innerHTML=[[s2A,pA,COR_A],[s2B,pB,COR_B]].map(([c,p,cor])=>`<div class="s2c${c.v>0&&c.v===Math.max(s2A.v,s2B.v)?' frente':''}" style="--c:${cor}">
+    <img src="${foto(c)}" alt="Foto oficial de ${c.nm}"><div><div class="nm">${c.nm}</div>
+    <div class="ptd"><span class="sg" style="background:${COR[c.sg]||'#666'}">${c.sg}</span><span class="num">${c.n}</span>${etiqueta(c)}</div>
+    <div class="vt">${ni(c.v)} votos</div></div><div class="pc">${nf(p)}%</div></div>`).join('');
+  $('s2bA').style.width=pA+'%';$('s2bA').style.background=COR_A;$('s2bB').style.width=pB+'%';$('s2bB').style.background=COR_B;
+  $('s2dif').innerHTML=!tot?'Aguardando dados do TSE':s2A.v===s2B.v?'<b>Empate</b>':`<b>${s2A.v>s2B.v?s2A.nm:s2B.nm}</b> à frente por <b>${ni(Math.abs(s2A.v-s2B.v))}</b> votos`;
+  const vi=(pres&&pres.vi)||{};
+  $('s2votos').innerHTML=[['Válidos',vi.val],['Brancos',vi.bra],['Nulos',vi.nul],['Abstenção',vi.abs]].map(([n,v])=>`<div>${n}<b>${nf(v||0)}%</b></div>`).join('');
+  // mapa e quadradinhos dos estados
+  let nA=0,nB=0;
+  for(const uf of Object.keys(MAPA_BR.uf)){
+    const x=parUF(uf),p=$('s2mapa').querySelector(`path[data-uf="${uf}"]`),t=$('mp-'+uf);
+    if(!x||!(x.a+x.b)){p.style.fill='color-mix(in srgb,var(--fraco) 45%,var(--fundo))';if(t)t.textContent='';continue;}
+    const ganha=x.a>=x.b,cor=ganha?COR_A:COR_B;ganha?nA++:nB++;
+    p.style.fill=`color-mix(in srgb,${cor} ${Math.round(35+.65*x.pst)}%,#9AA0A8)`;
+    if(t)t.textContent=nf(ganha?x.pa:x.pb,1)+'%';
+  }
+  $('s2nA').textContent=nA;$('s2nB').textContent=nB;$('s2nmA').textContent=s2A.nm;$('s2nmB').textContent=s2B.nm;
+  $('s2corA').style.background=COR_A;$('s2corB').style.background=COR_B;
+  $('s2ufs').innerHTML=[...UFS.map(u=>u[0]),'zz'].map(uf=>{const x=parUF(uf);
+    if(!x) return `<div class="s2u"><div class="t"><b>${uf.toUpperCase()}</b>—</div><div class="br"></div><div class="n"><span>—</span><span>—</span></div></div>`;
+    const cor=x.a+x.b?(x.a>=x.b?COR_A:COR_B):'transparent';
+    return `<div class="s2u" style="--c:${cor}" title="${NOME_UF[uf]}"><div class="t"><b>${uf==='zz'?'EXT':uf.toUpperCase()}</b>${nf(x.pst,1)}%</div>
+      <div class="br"><i style="width:${x.pa}%;background:${COR_A}"></i><i style="flex:1"></i><i style="width:${x.pb}%;background:${COR_B}"></i></div>
+      <div class="n"><span style="color:${COR_A}">${nf(x.pa,1)}</span><span style="color:${COR_B}">${nf(x.pb,1)}</span></div></div>`;}).join('');
+}
+function modo2(on){document.body.classList.toggle('modo2',on);$('seg2').hidden=!on;if(on){document.body.classList.remove('extra');}}
+
 /* ---------- tela SENADORES: a disputa do Senado num estado escolhido (os 8 mais votados; as vagas do estado em destaque) ---------- */
 let snUF=ler('apuracao-sen')||'pr';
 $('fSnUF').innerHTML=UFS.map(([uf,nome])=>`<option value="${uf}">${nome}</option>`).join('');
@@ -911,6 +1087,7 @@ async function atualizar(){
     }
     ultimo=novo; gravar('eleicoes-ultimo',JSON.stringify(novo));
     desenhar(novo);
+    if(turno===2||TESTE2){await buscarEstP(turno===2?E2.pres:E1.pres).catch(()=>{});try{desenharSeg2(novo);}catch(e){}}
     if(tela==='deps') buscarDeps().catch(()=>{});
     if(tela==='camara') buscarCamara().catch(()=>{});
     if(tela==='senado'||tela==='senadores') buscarSenado().catch(()=>{});
@@ -955,19 +1132,70 @@ botaoSom();
 /* ---------- festa: aviso + papel picado ---------- */
 const cv=$('confete'),cx=cv.getContext('2d');let pecas=[],anim=null;
 function tam(){cv.width=innerWidth*devicePixelRatio;cv.height=innerHeight*devicePixelRatio;}addEventListener('resize',tam);tam();
+// Lula virou: tela cheia por 10 s, melodia do "olê, olê, olê, olá… Lula, Lula" (gerada na hora), letra no ritmo e confete caindo
+const FESTA_MS=10000;
+// trilha de verdade: se existir festa.mp3 no site, toca ela; senão, a melodia gerada na hora
+// tempos (s) de cada sílaba na trilha: olê, olê, olê, olá (0 s e 7 s) e Lula! Lula! (10 s)
+const TRILHA_MS=14000,TRILHA_SIL=[[0,.35,.7,1.05,1.4,1.75,2.1,2.45],[7,7.35,7.7,8.05,8.4,8.75,9.1,9.45],[10.4,10.9,12.2,12.7]];
+let trilha=null;fetch('festa.mp3',{method:'HEAD',cache:'no-store'}).then(r=>{if(r.ok){trilha=new Audio('festa.mp3');trilha.preload='auto';}}).catch(()=>{});
 function festa(dif,rival,teste){
-  tling();
-  $('toastTit').textContent=teste?'Teste: Lula passou na frente':'Lula passou na frente';
-  $('toastTx').textContent=dif>0?`Agora está ${ni(dif)} votos à frente de ${rival}`:'Assim vai ser quando ele virar';
-  const t=$('toast');t.classList.add('on');clearTimeout(festa.t);festa.t=setTimeout(()=>t.classList.remove('on'),6000);
+  if(!teste&&Date.now()-(festa.ultima||0)<120000) return; festa.ultima=Date.now(); // se ficar virando e desvirando, no máx. 1 festa a cada 2 min
+  $('festaSub').textContent=dif>0?`Lula passou na frente · ${ni(dif)} votos à frente de ${rival}`:'Lula passou na frente!';
+  const f=$('festa');f.hidden=false;f.classList.remove('sai');
+  const fim=()=>{if(trilha){const a=trilha;let v=a.volume;const baixa=setInterval(()=>{v-=.1;if(v<=0){clearInterval(baixa);a.pause();a.volume=1;}else a.volume=v;},60);}
+    f.classList.add('sai');setTimeout(()=>{f.hidden=true;f.classList.remove('sai');},600);clearTimeout(festa.t);};
+  const dura=somOn&&trilha?TRILHA_MS:FESTA_MS; // com a trilha, a festa dura a música inteira
+  f.onclick=fim;clearTimeout(festa.t);festa.t=setTimeout(fim,dura);
+  cantar();
   if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const cores=['#D60828','#F06A7E','#E8B54A','#F5D98B','#FFFFFF','#C4170C'],W=cv.width,H=cv.height,d=devicePixelRatio;
-  for(let i=0;i<240;i++){const da=Math.random()<.5,a=da?Math.PI+.35+Math.random()*.7:-.35-Math.random()*.7,v=(10+Math.random()*13)*d;
-    pecas.push({x:da?W:0,y:H*.8,vx:Math.cos(a)*v,vy:-Math.abs(Math.sin(a)*v)-7*d,r:Math.random()*6,vr:(Math.random()-.5)*.3,w:(5+Math.random()*6)*d,h:(3+Math.random()*4)*d,c:cores[i%cores.length],vida:1});}
+  chuva(dura);
+}
+// melodia: sílaba, nota (Hz), duração em batidas
+const MELODIA=[['O',392],['LÊ',523.3],['O',392],['LÊ',523.3],['O',392],['LÊ',523.3],['O',392],['LÁ',659.3,2],['LU',587.3],['LA',523.3],['LU',587.3],['LA',523.3,2],[null,0,1]];
+function cantar(){
+  const sil=[...$('canto').querySelectorAll('span')],batida=.33,volta=MELODIA.reduce((t,m)=>t+(m[2]||1),0)*batida;
+  sil.forEach(x=>x.classList.remove('on'));
+  let sint=somOn;
+  if(somOn&&trilha){ // a trilha toca no lugar da melodia, e a letra acende no tempo dela
+    trilha.currentTime=0;trilha.volume=1;trilha.play().catch(()=>{});
+    const acende=(i,t)=>setTimeout(()=>{sil.forEach(x=>x.classList.remove('on'));if(sil[i])sil[i].classList.add('on');},t*1000);
+    TRILHA_SIL[0].forEach((t,i)=>acende(i,t));TRILHA_SIL[1].forEach((t,i)=>acende(i,t));TRILHA_SIL[2].forEach((t,i)=>acende(8+i,t));
+    setTimeout(()=>sil.forEach(x=>x.classList.add('on')),2.9e3);setTimeout(()=>sil.forEach(x=>x.classList.remove('on')),7e3-50);
+    setTimeout(()=>sil.forEach(x=>x.classList.add('on')),13.3e3);
+    return;}
+  if(sint){prepararSom();}
+  const t0=ctx&&sint?ctx.currentTime+.05:0;
+  for(let rep=0;rep<2;rep++){let t=rep*volta,k=0;
+    for(const [s,hz,dur=1] of MELODIA){
+      const ini=t,i=k;
+      if(s){setTimeout(()=>{sil.forEach(x=>x.classList.remove('on'));if(sil[i])sil[i].classList.add('on');},ini*1000);
+        if(ctx&&sint) corneta(hz,t0+ini,dur*batida*.92);k++;}
+      if(ctx&&sint){bumbo(t0+ini);if(dur>1)bumbo(t0+ini+batida);palma(t0+ini+batida/2);}
+      t+=dur*batida;}
+  }
+  setTimeout(()=>sil.forEach(x=>x.classList.add('on')),2*volta*1000);
+}
+function corneta(hz,t,d){ // som de corneta de torcida: dente de serra + filtro
+  const o=ctx.createOscillator(),o2=ctx.createOscillator(),g=ctx.createGain(),fl=ctx.createBiquadFilter();
+  o.type='sawtooth';o.frequency.value=hz;o2.type='square';o2.frequency.value=hz*1.005;fl.type='lowpass';fl.frequency.value=hz*4;fl.Q.value=4;
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.09,t+.02);g.gain.setValueAtTime(.08,t+d*.7);g.gain.exponentialRampToValueAtTime(.0001,t+d);
+  o.connect(fl);o2.connect(fl);fl.connect(g).connect(ctx.destination);o.start(t);o2.start(t);o.stop(t+d+.05);o2.stop(t+d+.05);
+}
+function bumbo(t){const o=ctx.createOscillator(),g=ctx.createGain();o.frequency.setValueAtTime(130,t);o.frequency.exponentialRampToValueAtTime(45,t+.18);
+  g.gain.setValueAtTime(.35,t);g.gain.exponentialRampToValueAtTime(.0001,t+.22);o.connect(g).connect(ctx.destination);o.start(t);o.stop(t+.25);}
+function palma(t){const n=ctx.sampleRate*.12,b=ctx.createBuffer(1,n,ctx.sampleRate),d=b.getChannelData(0);for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/n,3);
+  const s=ctx.createBufferSource(),f=ctx.createBiquadFilter(),g=ctx.createGain();s.buffer=b;f.type='bandpass';f.frequency.value=1500;g.gain.value=.18;s.connect(f).connect(g).connect(ctx.destination);s.start(t);}
+// confete caindo do alto, sem parar, durante a festa (mais uma explosão dos lados no começo)
+function chuva(ms){
+  const cores=['#D60828','#F06A7E','#E8B54A','#F5D98B','#FFFFFF','#C4170C'],d=devicePixelRatio,fimEm=performance.now()+ms;
+  const solta=n=>{for(let i=0;i<n;i++)pecas.push({x:Math.random()*cv.width,y:-20*d,vx:(Math.random()-.5)*3*d,vy:(2+Math.random()*3)*d,r:Math.random()*6,vr:(Math.random()-.5)*.3,w:(6+Math.random()*7)*d,h:(4+Math.random()*5)*d,c:cores[(Math.random()*cores.length)|0],vida:1.6,cai:1});};
+  for(let i=0;i<200;i++){const da=Math.random()<.5,a=da?Math.PI+.35+Math.random()*.7:-.35-Math.random()*.7,v=(10+Math.random()*13)*d;
+    pecas.push({x:da?cv.width:0,y:cv.height*.8,vx:Math.cos(a)*v,vy:-Math.abs(Math.sin(a)*v)-7*d,r:Math.random()*6,vr:(Math.random()-.5)*.3,w:(5+Math.random()*6)*d,h:(3+Math.random()*4)*d,c:cores[i%cores.length],vida:1});}
+  const gera=()=>{if(performance.now()<fimEm){solta(6);setTimeout(gera,60);}};gera();
   if(!anim)loop();
 }
 function loop(){cx.clearRect(0,0,cv.width,cv.height);pecas=pecas.filter(p=>p.vida>0&&p.y<cv.height+30);
-  for(const p of pecas){p.vy+=.3*devicePixelRatio;p.vx*=.985;p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;p.vida-=.005;
+  for(const p of pecas){p.vy+=(p.cai?.04:.3)*devicePixelRatio;if(p.cai)p.vy=Math.min(p.vy,6*devicePixelRatio);p.vx*=.985;p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;p.vida-=.005;
     cx.save();cx.globalAlpha=Math.min(1,p.vida*2);cx.fillStyle=p.c;cx.translate(p.x,p.y);cx.rotate(p.r);cx.fillRect(-p.w/2,-p.h/2,p.w,p.h*Math.abs(Math.cos(p.r*2))+1);cx.restore();}
   anim=pecas.length?requestAnimationFrame(loop):(cx.clearRect(0,0,cv.width,cv.height),null);}
 
@@ -975,6 +1203,10 @@ function loop(){cx.clearRect(0,0,cv.width,cv.height);pecas=pecas.filter(p=>p.vid
 const TEMAS=['auto','light','dark'],NOMES={auto:'Automático',light:'Claro',dark:'Escuro'};let tema=ler('apuracao-tema')||'auto';
 function aplicaTema(){if(tema==='auto')document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme',tema);$('tema').querySelector('span').textContent=NOMES[tema];}
 $('tema').onclick=()=>{tema=TEMAS[(TEMAS.indexOf(tema)+1)%3];gravar('apuracao-tema',tema);aplicaTema();};aplicaTema();
+
+/* ---------- botão de teste da festa (só nos links de teste) ---------- */
+if(TESTE){const b=document.createElement('button');b.className='bt testeFesta';b.type='button';b.textContent='▶ Testar a festa do Lula';
+  b.onclick=()=>{somOn=true;botaoSom();prepararSom();festa(1234567,'Flávio Bolsonaro',true);};document.body.appendChild(b);}
 
 /* ---------- instalar como app (PWA) ---------- */
 if('serviceWorker' in navigator) addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));

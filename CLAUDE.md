@@ -20,6 +20,9 @@ Projeto próprio desde 2026-10-04, separado do Ritmo (antes morava em `mei-finan
   - DEPUTADOS: filtro estado / federal-estadual / eleitos-mais votados (`apuracao-dep`); vagas de `carg[0].nv`; páginas de 30 pelas setas.
   - CÂMARA (513, soma eleitos dos 27 estados) e SENADO (81 = 27 de 2022 fixas em `SEN2022`, de memória, + 54 de hoje). Esquerda vermelho, centro cinza (PSD, MDB, PSDB, Cidadania, Solidariedade, Avante), direita azul — listas `ESQ`/`CENTRO`. Passar o mouse (ou tocar) numa cadeira mostra nome, partido, UF, votos e situação.
 - **Sem esperar o TSE:** `matematica()` marca ELEITO / 2º TURNO quando os eleitores que faltam (`e.esnt`) não viram mais (Presidente, Governador, Senado). `projetar()` faz a projeção das vagas de deputado (QE do arquivo `carg[0].qe`, QP com 10%, sobras 80/20, 3ª fase todos) — etiqueta PROJEÇÃO; bateu 26/26 com o TSE em DF, ES e RO.
+- **2º turno = tela única** (`body.modo2`, `#seg2`): mapa do Brasil por estado (`brasil.js`, contornos simplificados do brazil-states.geojson do click_that_hood), placar Lula x Flávio, válidos/brancos/nulos/abstenção e os 27 estados + Exterior (`<uf>-c0001`). Some todo o resto.
+- **Festa** quando o Lula vira: tela cheia com `festa.mp3` (14 s do jingle "Olê, olê, olê, olá… Lula, Lula", vídeo do Joel), letra acendendo no tempo e confete; sem som, melodia gerada e 10 s. No máx. 1 festa a cada 2 min.
+- Links de teste: `?teste=festa` (botão da festa) e `?teste=2turno` (tela do 2º turno com números do 1º).
 - Lê os dois formatos: `dados/<uf>/…-u.json` (completo) e `dados-simplificados/…-r.json`; fica com o mais adiantado.
 - Fotos oficiais: `…/<eleição>/fotos/<uf>/<sqcand>.jpeg` (cópias locais em `fotos/`; candidato novo cai na foto do TSE).
 
