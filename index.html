@@ -93,6 +93,8 @@ main{max-width:1480px;margin:0 auto;padding:10px 16px 8px;display:flex;flex-dire
 .tag{font-size:11px;font-weight:800;padding:2px 7px;border-radius:5px;letter-spacing:.04em;white-space:nowrap;display:inline-block}
 .tag.el{background:var(--okBg);color:var(--ok)}
 .tag.t2{background:var(--t2Bg);color:var(--t2)}
+.tag.pj{background:var(--aviso);color:var(--avisoTx)}
+.dep.pj{box-shadow:inset 5px 0 0 var(--avisoTx)}
 
 /* Presidente */
 .pres{padding:14px 16px 16px}
@@ -457,8 +459,11 @@ function interpretar(d,ele,uf){
   if(Array.isArray(d.carg)) for(const c of d.carg) for(const a of c.agr||[]) for(const p of a.par||[]) for(const x of p.cand||[]) pega(x,p.sg); // completo
   if(Array.isArray(d.cand)) d.cand.forEach(x=>pega(x));                                                                               // simplificado
   const s=d.s||d, v=d.v||d;
-  const nv=num(Array.isArray(d.carg)&&d.carg[0]&&d.carg[0].nv);
-  return {nv, pst:num(s.pst), ts:num(s.ts), st:num(s.st), vv:num(v.vv), votos, lista, data:(d.dt&&d.ht)?d.dt+' '+d.ht:'', gerado:(d.dg||'')+' '+(d.hg||'')};
+  const c0=Array.isArray(d.carg)&&d.carg[0],nv=num(c0&&c0.nv);
+  // votos de cada partido/federação (nominais + legenda) e quem é de cada um — pra projeção das vagas de deputado
+  const agr=c0&&Array.isArray(c0.agr)?c0.agr.map(a=>({sg:a.com||a.nm,v:(a.par||[]).reduce((t,p)=>t+num(p.tvtn)+num(p.tvtl),0),ns:(a.par||[]).flatMap(p=>(p.cand||[]).map(x=>+x.n))})):null;
+  const rem=d.e&&d.e.esnt!=null?num(d.e.esnt):null; // eleitores das seções que ainda não foram contadas
+  return {nv, qe:num(c0&&c0.qe), cd:c0?String(c0.cd):'', t:String(d.t||''), rem, agr, pst:num(s.pst), ts:num(s.ts), st:num(s.st), vv:num(v.vv), votos, lista, data:(d.dt&&d.ht)?d.dt+' '+d.ht:'', gerado:(d.dg||'')+' '+(d.hg||'')};
 }
 const quando=t=>{const m=/(\d\d)\/(\d\d)\/(\d{4})\s+(\d\d):(\d\d):(\d\d)/.exec(t||'');return m?+(m[3]+m[2]+m[1]+m[4]+m[5]+m[6]):0;};
 async function buscar(url,ele,uf){
@@ -480,17 +485,53 @@ function montar(r,fixos){
   // candidatos: os do arquivo do TSE; sem arquivo ainda, a lista oficial do 1º turno
   const base=r&&Array.isArray(r.lista)&&r.lista.length?r.lista:(fixos||[]).map(([n,nm,sg,sq])=>({n,nm,sg,sq,ele:ELEICAO[1].pres,uf:'br'}));
   const tot=r?r.vv:0;
-  return base.map(c=>{const x=(r&&r.votos&&r.votos[c.n])||{v:0,pc:0,e:'',st:''};return {...c,v:x.v,pc:x.pc||(tot?x.v/tot*100:0),e:x.e,st:x.st};})
+  const arr=base.map(c=>{const x=(r&&r.votos&&r.votos[c.n])||{v:0,pc:0,e:'',st:''};return {...c,v:x.v,pc:x.pc||(tot?x.v/tot*100:0),e:x.e,st:x.st};})
     .sort((a,b)=>(b.v-a.v)||(ordem(fixos,a.n)-ordem(fixos,b.n))||a.nm.localeCompare(b.nm,'pt-BR'));
+  matematica(arr,r);
+  if(r&&/^[678]$/.test(r.cd)){const P=projetar(r);arr.forEach(c=>{if(P.has(c.n))c.proj=true;});}
+  return arr;
+}
+/* Eleito matematicamente (sem esperar o TSE): nem que TODOS os eleitores que faltam votassem contra, o resultado vira.
+   Presidente/Governador: >50% dos válidos garantido = ELEITO; ninguém consegue passar de 50% = 2º TURNO garantido pros 2 que não podem mais ser alcançados.
+   Senado: entre os N mais votados garantido = ELEITO. 2º turno: o 1º não pode mais ser alcançado = ELEITO. */
+function matematica(arr,r){
+  if(!r||r.rem==null||!r.vv||!arr.length) return;
+  const rem=r.rem,vv=r.vv,cd=r.cd;
+  const garantido=(i,k)=>arr[i].v>0&&arr.filter((c,j)=>j!==i&&c.v+rem>=arr[i].v).length<k;
+  if(cd==='5'){const k=r.nv||2;arr.forEach((c,i)=>{if(garantido(i,k))c.mat='el';});return;}
+  if(cd!=='1'&&cd!=='3') return;
+  if(r.t==='2'){if(arr[1]&&arr[0].v>arr[1].v+rem)arr[0].mat='el';return;}
+  if(arr[0].v>(vv+rem)/2){arr[0].mat='el';return;}
+  if(arr[0].v+rem<=(vv+rem)/2) arr.slice(0,2).forEach((c,i)=>{if(garantido(i,2))c.mat='t2';});
+}
+/* Projeção das vagas de deputado "se a apuração acabasse agora" (regra da Lei 14.211/2021 + decisão do STF de 2024):
+   1) quociente eleitoral QE = válidos / vagas; cada partido/federação leva votos/QE vagas (candidato precisa de 10% do QE);
+   2) sobras pela maior média (votos/(vagas+1)) entre quem tem 80% do QE, com candidato de 20% do QE;
+   3) se ainda sobrar vaga, todos disputam pela maior média. */
+function projetar(r){
+  if(r._proj) return r._proj;
+  const S=new Set();Object.defineProperty(r,'_proj',{value:S,enumerable:false});
+  if(!r.agr||!r.nv||!r.vv) return S;
+  const q=r.vv/r.nv,QE=r.qe||((q%1)>.5?Math.ceil(q):Math.floor(q));if(!QE) return S; // usa o quociente que o TSE publica no arquivo
+  const g=r.agr.map(a=>({v:a.v,vagas:0,cs:a.ns.map(n=>({n,v:(r.votos[n]||{}).v||0})).sort((x,y)=>y.v-x.v)}));
+  let livres=r.nv;
+  const entra=(a,c)=>{c.ok=1;S.add(c.n);a.vagas++;livres--;};
+  for(const a of g){const qp=Math.floor(a.v/QE);for(const c of a.cs){if(a.vagas>=qp||livres<=0||c.v<.1*QE)break;entra(a,c);}}
+  const prox=(a,min)=>a.cs.find(c=>!c.ok&&c.v>=min&&c.v>0);
+  const sobra=(podeA,min)=>{while(livres>0){let best=null,bm=-1;for(const a of g){if(!podeA(a)||!prox(a,min))continue;const m=a.v/(a.vagas+1);if(m>bm){bm=m;best=a;}}if(!best)return;entra(best,prox(best,min));}};
+  sobra(a=>a.v>=.8*QE,.2*QE);
+  sobra(()=>true,0);
+  return S;
 }
 function ordem(fixos,n){const i=(fixos||[]).findIndex(f=>f[0]===n);return i<0?999:i;
 }
 function foto(c){return FOTOS_LOCAIS.has(c.sq)?`fotos/${c.sq}.jpeg`:fotoTSE(c.ele,c.uf,c.sq);}
-const eleito=c=>{const st=(c.st||'').toLowerCase();return c.e==='s'||(st.includes('eleito')&&!st.includes('não')&&!st.includes('nao'));};
+const eleito=c=>{const st=(c.st||'').toLowerCase();return c.e==='s'||c.mat==='el'||(st.includes('eleito')&&!st.includes('não')&&!st.includes('nao'));};
 function etiqueta(c){
   const st=(c.st||'').toLowerCase();
-  if(st.includes('2º turno')||st.includes('2o turno')||st.includes('segundo turno')) return '<span class="tag t2">2º TURNO</span>';
-  if(c.e==='s'||(st.includes('eleito')&&!st.includes('não')&&!st.includes('nao'))) return '<span class="tag el">ELEITO</span>';
+  if(st.includes('2º turno')||st.includes('2o turno')||st.includes('segundo turno')||c.mat==='t2') return '<span class="tag t2">2º TURNO</span>';
+  if(eleito(c)) return '<span class="tag el">ELEITO</span>';
+  if(c.proj) return '<span class="tag pj">PROJEÇÃO</span>';
   return '';
 }
 function cards(el,ord){
@@ -614,19 +655,22 @@ async function buscarDeps(){
 function listaDeps(){
   const r=deps[chaveDep()],todos=montar(r,null),eleitos=todos.filter(eleito),vagas=(r&&r.nv)||DEP_POR_PAG;
   const soEleitos=depSel.ver==='eleitos'&&eleitos.length>0;
-  return {r,vagas,eleitos,soEleitos,lista:soEleitos?eleitos:todos.slice(0,vagas)};
+  const proj=depSel.ver==='eleitos'&&!eleitos.length?todos.filter(c=>c.proj):[];
+  return {r,vagas,eleitos,soEleitos,proj:proj.length>0,lista:soEleitos?eleitos:proj.length?proj:todos.slice(0,vagas)};
 }
 const paginas=()=>Math.max(1,Math.ceil(listaDeps().lista.length/DEP_POR_PAG));
 function desenharDeps(){
-  const {r,vagas,eleitos,soEleitos,lista}=listaDeps(),[uf,nomeUF]=UFS.find(u=>u[0]===depSel.uf)||['pr','Paraná'];
+  const {r,vagas,eleitos,soEleitos,proj,lista}=listaDeps(),[uf,nomeUF]=UFS.find(u=>u[0]===depSel.uf)||['pr','Paraná'];
   const tipo=depSel.cargo==='f'?'federais':uf==='df'?'distritais':'estaduais';
   const pags=Math.max(1,Math.ceil(lista.length/DEP_POR_PAG));if(depPag>=pags)depPag=0;
   const ord=lista.slice(depPag*DEP_POR_PAG,depPag*DEP_POR_PAG+DEP_POR_PAG),max=Math.max(...lista.map(c=>c.v),1);
   apurado('apDep',r);
   $('depLugar').textContent=`${nomeUF} · ${vagas} cadeiras`;
   $('depApTx').textContent='apurado';
-  $('depTit').innerHTML=`Deputados ${tipo} <b>${soEleitos?'eleitos':'mais votados'}</b>`+(eleitos.length?` <span class="depconta">${eleitos.length} de ${vagas} eleitos</span>`:'');
-  $('depNota').textContent=depSel.ver==='eleitos'&&!eleitos.length
+  $('depTit').innerHTML=`Deputados ${tipo} <b>${soEleitos?'eleitos':proj?'eleitos · projeção':'mais votados'}</b>`+(eleitos.length?` <span class="depconta">${eleitos.length} de ${vagas} eleitos</span>`:'');
+  $('depNota').textContent=proj
+    ?`Projeção: quem entraria se a apuração acabasse agora, pela regra das vagas (votos de cada partido/federação, quociente eleitoral e sobras). Pode mudar até o fim; quando o TSE confirmar, vira ELEITO.`
+    :depSel.ver==='eleitos'&&!eleitos.length
     ?`O TSE ainda não marcou os eleitos deste estado. Enquanto isso, aparecem os ${vagas} mais votados (nem todo mais votado entra: as cadeiras vão primeiro pelos votos de cada partido).`
     :soEleitos?'Só quem o TSE já confirmou como eleito, do mais votado pro menos votado.'
     :'Os mais votados, em ordem de votos. Quem o TSE já confirmou como eleito fica em verde.';
@@ -636,7 +680,7 @@ function desenharDeps(){
   $('fVer').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.v===depSel.ver));
   $('depPags').hidden=pags<2;$('pagTx').textContent=`${depPag*DEP_POR_PAG+1}–${Math.min(lista.length,(depPag+1)*DEP_POR_PAG)} de ${lista.length}`;
   const linha=(c,i)=>{const cor=COR[c.sg]||'#666';
-    return `<li class="dep${eleito(c)?' el':''}${i===0?' top':''}" style="--c:${cor}"><span class="rk">${i+1}</span><img src="${foto(c)}" alt="Foto oficial de ${c.nm}">
+    return `<li class="dep${eleito(c)?' el':c.proj?' pj':''}${i===0?' top':''}" style="--c:${cor}"><span class="rk">${i+1}</span><img src="${foto(c)}" alt="Foto oficial de ${c.nm}">
       <div><div class="nm">${c.nm}</div><div class="ptd"><span class="sg" style="background:${cor}">${c.sg}</span><span class="num">${c.n}</span>${etiqueta(c)}</div></div>
       <div class="dir"><div class="vv">${ni(c.v)}</div><div class="pp">votos · ${nf(c.pc)}%</div></div>
       <span class="barra"><i style="width:${c.v/max*100}%;background:${cor}"></i></span></li>`;};
@@ -715,7 +759,7 @@ const dica=document.createElement('div');dica.className='dica';dica.hidden=true;
 function textoDica(c){
   const uf=(c.uf||'').toUpperCase();
   if(!c.b) return `<b>Cadeira a definir</b><span>${uf?uf+' · ':''}o TSE ainda não confirmou</span>`;
-  const sit=c.ano===2022?'eleito em 2022 · mandato até 2031':c.f?'na frente · ainda sem confirmação do TSE':'<em>ELEITO</em>';
+  const sit=c.ano===2022?'eleito em 2022 · mandato até 2031':c.sit||(c.f?'na frente · ainda sem confirmação do TSE':'<em>ELEITO</em>');
   return `<b>${c.nm||c.sg}</b><span><i style="background:${COR[c.sg]||'#666'}">${c.sg}</i>${uf}${c.v?` · ${ni(c.v)} votos`:''}</span><span>${sit}</span>`;
 }
 function ligarDica(el){
@@ -729,13 +773,13 @@ function ligarDica(el){
   el.addEventListener('pointermove',mostra);el.addEventListener('click',mostra);
   el.addEventListener('pointerleave',()=>{dica.hidden=true;el.querySelectorAll('.foco').forEach(x=>x.classList.remove('foco'));});
 }
-function legendaPlen(el,cadeiras,extra){
+function legendaPlen(el,cadeiras,extra,txtF){
   const N=cadeiras.length,pend=cadeiras.filter(c=>!c.b).length;
   el.innerHTML=BLOCOS.map(([k,nome,cor])=>{
     const cs=cadeiras.filter(c=>c.b===k),porP={};cs.forEach(c=>porP[c.sg]=(porP[c.sg]||0)+1);
     const proj=cs.filter(c=>c.f).length;
     return `<div class="bloco" style="--c:${cor}"><div class="bt1"><span class="bn">${nome}</span><span class="bq">${cs.length}</span></div>
-      <div class="bp">${Object.entries(porP).sort((a,b)=>b[1]-a[1]).map(([sg,n])=>`<span>${sg} <b>${n}</b></span>`).join('')||'—'}${proj?`<span>(${proj} na frente, ainda sem confirmação)</span>`:''}</div></div>`;
+      <div class="bp">${Object.entries(porP).sort((a,b)=>b[1]-a[1]).map(([sg,n])=>`<span>${sg} <b>${n}</b></span>`).join('')||'—'}${proj?`<span>(${proj} ${txtF||'na frente, ainda sem confirmação'})</span>`:''}</div></div>`;
   }).join('')+(pend?`<div class="bloco pend" style="--c:var(--fraco)"><div class="bt1"><span class="bn">A definir</span><span class="bq">${pend}</span></div></div>`:'')
   +`<div class="maioria">Maioria: <b>${Math.floor(N/2)+1}</b> cadeiras${extra?' · '+extra:''}</div>`;
 }
@@ -752,18 +796,19 @@ function desenharCamara(){
   const cad=[];let estadosOk=0,faltaArq=0;
   for(const [uf] of UFS){
     const r=camara[uf];if(!r){faltaArq++;continue;}
-    const vagas=r.nv||0,el=montar(r,null).filter(eleito).slice(0,vagas);
+    const vagas=r.nv||0,todos=montar(r,null),el=todos.filter(eleito).slice(0,vagas);
     if(el.length>=vagas&&vagas)estadosOk++;
     el.forEach(c=>cad.push({b:bloco(c.sg),sg:c.sg,nm:c.nm,uf,v:c.v}));
-    for(let k=el.length;k<vagas;k++)cad.push({b:null,uf});
+    const pj=todos.filter(c=>c.proj&&!eleito(c)).slice(0,vagas-el.length);
+    pj.forEach(c=>cad.push({b:bloco(c.sg),sg:c.sg,nm:c.nm,uf,v:c.v,f:true,sit:'projeção · se a apuração acabasse agora'}));
+    for(let k=el.length+pj.length;k<vagas;k++)cad.push({b:null,uf});
   }
   $('camVagas').textContent=cad.length||513;
   desenharPlenario($('camDes'),cad.length?cad:[...Array(513)].map(()=>({b:null})),'Câmara dos Deputados');
-  legendaPlen($('camLeg'),cad.length?cad:[...Array(513)].map(()=>({b:null})),`${estadosOk} de 27 estados fechados`);
-  const marcados=cad.filter(c=>c.b).length;
+  legendaPlen($('camLeg'),cad.length?cad:[...Array(513)].map(()=>({b:null})),`${estadosOk} de 27 estados confirmados pelo TSE`,'em projeção');
+  const conf=cad.filter(c=>c.b&&!c.f).length,pj=cad.filter(c=>c.f).length;
   $('camNota').textContent=faltaArq?'Buscando os números de todos os estados no TSE…'
-    :marcados?'Cada cadeira colorida é um deputado que o TSE já confirmou como eleito. As vazias ainda não foram definidas.'
-    :'O TSE ainda não confirmou nenhum deputado eleito. As cadeiras vão se pintando conforme cada estado fecha a conta das vagas (pelos votos de cada partido).';
+    :(conf?`Cor forte: ${conf} confirmados pelo TSE. `:'')+(pj?`Mais apagadas: projeção de quem entraria se a apuração acabasse agora (regra das vagas: votos de cada partido/federação, quociente e sobras). Pode mudar até o fim.`:'Todas as cadeiras já foram confirmadas.');
 }
 
 // Senado: 27 cadeiras de 2022 + as 54 de hoje (2 por estado). Sem confirmação do TSE, mostra quem está na frente, mais clarinho.
@@ -784,8 +829,8 @@ function desenharSenado(){
     for(let k=escolhidos.length;k<vagas;k++)cad.push({b:null,uf});
   }
   desenharPlenario($('senDes'),cad,'Senado Federal');
-  legendaPlen($('senLeg'),cad,`${conf} de 54 vagas de hoje confirmadas`);
-  $('senNota').textContent=`27 cadeiras eleitas em 2022 (pelo partido da eleição) + 54 em disputa hoje. `+(frente?'As mais apagadas são de quem está na frente no estado, mas o TSE ainda não confirmou.':'Todas as vagas de hoje já foram confirmadas pelo TSE.');
+  legendaPlen($('senLeg'),cad,`${conf} de 54 vagas de hoje já garantidas`);
+  $('senNota').textContent=`27 cadeiras eleitas em 2022 (pelo partido da eleição) + 54 em disputa hoje. `+(frente?'As mais apagadas são de quem está na frente no estado, mas o TSE ainda não confirmou.':'Todas as vagas de hoje já estão garantidas.');
 }
 
 /* ---------- filtro do Governador (painel PRESIDENTE) ---------- */
@@ -805,7 +850,7 @@ function desenharSenadores(){
   const [uf,nome]=UFS.find(u=>u[0]===snUF)||['pr','Paraná'],r=senado[uf],vagas=(r&&r.nv)||2;
   const todos=montar(r,uf==='pr'?CAND.sen:null),temEl=todos.some(eleito);
   $('fSnUF').value=uf;$('snUF').textContent=nome;$('snLugar').textContent=`${nome} · ${vagas} vagas`;apurado('apSn',r);
-  $('snNota').textContent=temEl?'Em verde, quem o TSE já confirmou como eleito.':`As ${vagas} vagas ficam com os ${vagas} mais votados. Em destaque, quem está ocupando as vagas agora (o TSE ainda não confirmou).`;
+  $('snNota').textContent=temEl?'Em verde, quem já está eleito: garantido pela conta (os votos que faltam não viram mais) ou confirmado pelo TSE.':`As ${vagas} vagas ficam com os ${vagas} mais votados. Em destaque, quem está ocupando as vagas agora (o TSE ainda não confirmou).`;
   $('snGrade').innerHTML=todos.slice(0,8).map((c,i)=>{
     const cor=COR[c.sg]||'#666',el=eleito(c),frente=!temEl&&i<vagas&&c.v>0;
     return `<div class="scard${el?' el':frente?' frente':''}" style="--c:${cor}">

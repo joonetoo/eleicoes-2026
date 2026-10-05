@@ -19,6 +19,7 @@ Projeto próprio desde 2026-10-04, separado do Ritmo (antes morava em `mei-finan
   - SENADORES: disputa do Senado do estado escolhido (8 mais votados; `apuracao-sen`).
   - DEPUTADOS: filtro estado / federal-estadual / eleitos-mais votados (`apuracao-dep`); vagas de `carg[0].nv`; páginas de 30 pelas setas.
   - CÂMARA (513, soma eleitos dos 27 estados) e SENADO (81 = 27 de 2022 fixas em `SEN2022`, de memória, + 54 de hoje). Esquerda vermelho, centro cinza (PSD, MDB, PSDB, Cidadania, Solidariedade, Avante), direita azul — listas `ESQ`/`CENTRO`. Passar o mouse (ou tocar) numa cadeira mostra nome, partido, UF, votos e situação.
+- **Sem esperar o TSE:** `matematica()` marca ELEITO / 2º TURNO quando os eleitores que faltam (`e.esnt`) não viram mais (Presidente, Governador, Senado). `projetar()` faz a projeção das vagas de deputado (QE do arquivo `carg[0].qe`, QP com 10%, sobras 80/20, 3ª fase todos) — etiqueta PROJEÇÃO; bateu 26/26 com o TSE em DF, ES e RO.
 - Lê os dois formatos: `dados/<uf>/…-u.json` (completo) e `dados-simplificados/…-r.json`; fica com o mais adiantado.
 - Fotos oficiais: `…/<eleição>/fotos/<uf>/<sqcand>.jpeg` (cópias locais em `fotos/`; candidato novo cai na foto do TSE).
 
